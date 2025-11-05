@@ -20,6 +20,8 @@ public enum taskEnum {
     
     SPLITTER(taskType.ROUTER, "Splits a large message into several smaller ones"),
     ROUTER(taskType.ROUTER, "Sends a message to a destination based on content"),
+    DISTRIBUTOR(taskType.DISTRIBUTOR, "distributor si"),
+
     
     // --- TRANSFORMERS ---
     MERGER(taskType.TRANSFORMER, "Aggregates several small messages into one large one"),
