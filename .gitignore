@@ -1,0 +1,12 @@
+
+# Compilados de Maven
+target/
+
+# Compilados de Java
+*.class
+*.jar
+
+# NetBeans
+nbproject/
+build/
+dist/
