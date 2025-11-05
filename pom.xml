@@ -10,4 +10,7 @@
         <maven.compiler.release>24</maven.compiler.release>
         <exec.mainClass>me.integracion.iia.IIA</exec.mainClass>
     </properties>
+    <dependencies>
+        
+    </dependencies>
 </project>
