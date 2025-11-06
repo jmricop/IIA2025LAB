@@ -4,10 +4,20 @@
  */
 package Tasks.transformators;
 
+import Tasks.Task;
+import common.Slot;
+
+
+
 /**
  *
  * @author apolo
  */
-public class Splitter {
-    //Prueba
+public class Splitter extends Task {
+
+    private String xPathExpression;
+    private String idXML;
+    
+    
+    
 }
