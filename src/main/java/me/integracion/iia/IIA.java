@@ -1,7 +1,14 @@
 package me.integracion.iia;
 
+import Tasks.enrouters.Filter;
+import Tasks.taskEnum;
+import common.Message;
+import common.Slot;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -20,8 +27,8 @@ import javax.xml.xpath.XPathFactory;
  */
 public class IIA {
 
-    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
-
+    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+        /*
         // --- DEFINICIÓN DE RUTAS ---
         // Esta es la ruta relativa correcta desde la raíz del proyecto (IIA/) 
         // hasta tu archivo, basado en tu estructura.
@@ -101,6 +108,38 @@ public class IIA {
                 System.err.println("Error en la expresión XPath: " + e.getMessage());
                 e.printStackTrace();
             }
+        }*/
+
+        /*PRUEBA FILTER CORRECTA
+        ArrayList<Slot> es = new ArrayList<>();
+        Queue<Message> queueEntrada = new LinkedList<>();
+        Slot sEntrada = new Slot(queueEntrada);
+
+        ArrayList<Slot> exsl = new ArrayList<>();
+        Queue<Message> queueSalida = new LinkedList<>();
+        Slot sSalida = new Slot(queueSalida);
+        exsl.add(sSalida);
+        Document doc = null;
+        try {
+            File inputFile = new File("src/main/java/resources/cdcatalog.xml");
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            doc = dBuilder.parse(inputFile);
+            doc.getDocumentElement().normalize();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
         }
+
+        sEntrada.addMessage(new Message(doc, 1));
+        es.add(sEntrada);
+
+        Filter filtro = new Filter(taskEnum.FILTER, es, exsl, "//age"); // <-- CORREGIDO: XPath
+
+        filtro.action();
+
+        System.out.println("--- Resultado del Filtro ---");
+        filtro.mock();
+        */
     }
 }
