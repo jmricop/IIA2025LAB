@@ -4,10 +4,81 @@
  */
 package Tasks.transformators;
 
+import Tasks.Task;
+import Tasks.taskEnum;
+import common.Message;
+import common.Slot;
+import java.io.File;
+import java.util.ArrayList;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import org.w3c.dom.Document;
+
 /**
  *
  * @author apolo
  */
-public class Translator {
-    
+public class Translator extends Task {
+
+    private String rutaXSLT;
+
+    public Translator(Slot entrada, Slot salida, String rutaXSLT) {
+        super(
+                taskEnum.TRANSLATOR,
+                new ArrayList<Slot>() {
+            {
+                add(entrada);
+            }
+        },
+                new ArrayList<Slot>() {
+            {
+                add(salida);
+            }
+        }
+        );
+
+        this.rutaXSLT = rutaXSLT;
+    }
+
+    @Override
+    public void action() {
+
+        if (isEmpty(0)) {
+            System.out.println("No hay mensaje de entrada para traducir.");
+        } else {
+            Message mensajeEntrada = getEntryMessage(0);
+
+            try {
+                StreamSource xsltSource = new StreamSource(new File(rutaXSLT));
+                TransformerFactory factory = TransformerFactory.newInstance();
+                Transformer transformer = factory.newTransformer(xsltSource);
+
+                DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+                Document outputDocument = documentBuilder.newDocument();
+                DOMResult domResult = new DOMResult(outputDocument);
+
+                transformer.transform(new DOMSource(mensajeEntrada.getDocument()), domResult);
+
+                Message mensajeSalida = new Message(
+                        outputDocument,
+                        mensajeEntrada.getIdDocument(),
+                        mensajeEntrada.getIdSegment(),
+                        mensajeEntrada.getnSegments()
+                );
+
+                setMensajeSalida(mensajeSalida, 0);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
 }
