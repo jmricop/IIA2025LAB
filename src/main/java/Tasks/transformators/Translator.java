@@ -25,24 +25,11 @@ import org.w3c.dom.Document;
  */
 public class Translator extends Task {
 
-    private String rutaXSLT;
+    private String xPathQuery;
 
-    public Translator(Slot entrada, Slot salida, String rutaXSLT) {
-        super(
-                taskEnum.TRANSLATOR,
-                new ArrayList<Slot>() {
-            {
-                add(entrada);
-            }
-        },
-                new ArrayList<Slot>() {
-            {
-                add(salida);
-            }
-        }
-        );
-
-        this.rutaXSLT = rutaXSLT;
+    public Translator(taskEnum t, ArrayList<Slot> es, ArrayList<Slot> exsl, String query) {
+        super(t, es, exsl);
+        this.xPathQuery = query;
     }
 
     @Override
@@ -54,7 +41,7 @@ public class Translator extends Task {
             Message mensajeEntrada = getEntryMessage(0);
 
             try {
-                StreamSource xsltSource = new StreamSource(new File(rutaXSLT));
+                StreamSource xsltSource = new StreamSource(new File(xPathQuery));
                 TransformerFactory factory = TransformerFactory.newInstance();
                 Transformer transformer = factory.newTransformer(xsltSource);
 
@@ -79,6 +66,12 @@ public class Translator extends Task {
             }
 
         }
-
+    }
+    
+    @Override
+    public void mock() {
+        
+        System.out.println(this.toString());
+    
     }
 }
