@@ -29,7 +29,9 @@ public enum taskEnum {
     
     // --- MODIFIERS ---
     ENRICHER(taskType.MODIFIER, "Adds data to the message from an external source"),
-    FILTER(taskType.MODIFIER, "Removes parts of the message that do not meet criteria");
+    FILTER(taskType.MODIFIER, "Removes parts of the message that do not meet criteria"),
+    CONTEXTSLIMMER(taskType.MODIFIER, "Removes parts of the message that do not meet context");
+
 
     
     private final taskType type;
