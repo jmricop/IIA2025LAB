@@ -70,27 +70,25 @@ public abstract class Task {
             Logger.getLogger(Task.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        // 2. Configurar el transformer para "pretty print" (indentación)
+        
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
-        // Omitir la declaración <?xml ...?> (opcional)
-        // transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        // 3. Preparar el destino (un StringWriter)
+        
         StringWriter writer = new StringWriter();
         StreamResult result = new StreamResult(writer);
 
-        // 4. Preparar la fuente (tu Document)
+        
         DOMSource source = new DOMSource(exitSlot.get(0).getFirstMessage().getDocument());
 
         try {
-            // 5. Realizar la transformación
+            
             transformer.transform(source, result);
         } catch (TransformerException ex) {
             Logger.getLogger(Task.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        // 6. Obtener el string resultante
+        
         return writer.getBuffer().toString();
 
     }

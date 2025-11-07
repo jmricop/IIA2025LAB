@@ -2,18 +2,22 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Tasks.transformators;
+package Tasks.transformators; // (El paquete es el que tenías)
 
 import Tasks.Task;
 import Tasks.taskEnum;
 
+// --- Imports de la versión HEAD (la buena) ---
 import common.Message;
 import common.Slot;
 import common.Diccionario;
-import common.IdUnico;
+import common.IdUnico; // (Aunque no lo usamos en la versión corregida, lo dejamos por si acaso)
 import common.ValoresDiccionario;
 
+// --- Imports de la versión MASTER (la necesaria) ---
 import java.util.ArrayList;
+
+// --- Imports comunes ---
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,9 +37,11 @@ public class Splitter extends Task {
 
     private String xPathExpression;
 
+    // --- Atributos de la versión HEAD (la buena) ---
     private DocumentBuilder dBuilder;
     private XPath xpath;
     
+    // --- Constructor de la versión HEAD (el bueno) ---
     public Splitter(taskEnum t, ArrayList<Slot> se, ArrayList<Slot> sl) {
         super(t, se, sl);
 
@@ -54,16 +60,24 @@ public class Splitter extends Task {
         this.xpath = xfactory.newXPath();
     }
 
+    // --- action() de la versión HEAD, CON LA CORRECCIÓN DE LÓGICA ---
     @Override
     public void action() {
         
         if (!isEmpty(0)) {
             
-            int idDocumentLote = IdUnico.getInstance().getNextIdDocument();
+            // --- ¡¡INICIO DE LA CORRECCIÓN DE LÓGICA!! ---
+            // (Basado en nuestra prueba, que falló la primera vez)
 
+            // 1. Coge el mensaje "Padre" PRIMERO
             Message mensaje = getEntryMessage(0); 
-            Document doc = mensaje.getDocument(); 
+            
+            // 2. REUTILIZA el ID de lote del padre (ej. 1)
+            int idDocumentLote = mensaje.getIdDocument(); 
 
+            // 3. Coge el XML
+            Document doc = mensaje.getDocument(); 
+            
             try {
                 XPathExpression expr = this.xpath.compile(xPathExpression);
                 NodeList items = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
@@ -77,7 +91,8 @@ public class Splitter extends Task {
                 }
 
                 ValoresDiccionario vD = new ValoresDiccionario(xp, doc);
-
+                
+                // Ahora usa el ID correcto (ej. 1) para guardar
                 Diccionario.getInstance().put(idDocumentLote, vD);
 
                 for (int i = 0; i < totalSegmentos; i++) {
@@ -89,7 +104,7 @@ public class Splitter extends Task {
                     
                     int numeroSegmento = i + 1;
                     
-
+                    // Ahora crea los hijos con el ID correcto (ej. 1)
                     Message mensajeAux = new Message(newDoc, idDocumentLote, numeroSegmento, totalSegmentos);
 
                     setMensajeSalida(mensajeAux, 0);
@@ -102,7 +117,13 @@ public class Splitter extends Task {
         } 
     }
 
+    // --- Setter de la versión HEAD (el bueno) ---
     public void setXPathExpression(String xPathExpression) {
         this.xPathExpression = xPathExpression;
+    }
+    
+    @Override
+    public void mock() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
