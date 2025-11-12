@@ -65,9 +65,6 @@ public class Splitter extends Task {
     public void action() {
         
         if (!isEmpty(0)) {
-            
-            // --- ¡¡INICIO DE LA CORRECCIÓN DE LÓGICA!! ---
-            // (Basado en nuestra prueba, que falló la primera vez)
 
             // 1. Coge el mensaje "Padre" PRIMERO
             Message mensaje = getEntryMessage(0); 
@@ -117,13 +114,14 @@ public class Splitter extends Task {
         } 
     }
 
-    // --- Setter de la versión HEAD (el bueno) ---
     public void setXPathExpression(String xPathExpression) {
         this.xPathExpression = xPathExpression;
     }
-    
+
     @Override
     public void mock() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
+    
+  
 }

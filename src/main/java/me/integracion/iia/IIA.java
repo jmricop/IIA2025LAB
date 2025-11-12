@@ -11,6 +11,7 @@ import javax.xml.transform.OutputKeys;
 import Tasks.enrouters.Filter;
 import Tasks.enrouters.Merger;
 import Tasks.taskEnum;
+import Tasks.transformators.Aggregator;
 import Tasks.transformators.Splitter;
 import common.Message;
 import common.Slot;
@@ -256,7 +257,7 @@ public class IIA {
         // --- FIN PRUEBA SPLITTER ---
         */
         
-        /*
+        
         // --- INICIO PRUEBA MERGER ---
         System.out.println("\n--- INICIANDO PRUEBA DEL MERGER ---");
 
@@ -347,11 +348,141 @@ public class IIA {
 
         System.out.println("--- FIN DE LA PRUEBA MERGER ---");
         // --- FIN PRUEBA MERGER ---
+        
+        
+        // ... (Este código va DENTRO de tu 'public static void main(String[] args)')
+        
+        /*
+        // --- INICIO PRUEBA MERGER ---
+        // (Tu código de prueba del Merger)
+        System.out.println("--- FIN DE LA PRUEBA MERGER ---");
+        // --- FIN PRUEBA MERGER ---
         */
+
+
+        // --- INICIO PRUEBA AGGREGATOR ---
+        /*
+        System.out.println("\n--- INICIANDO PRUEBA DEL AGGREGATOR ---");
+
+        // --- 1. PREPARACIÓN (Setup) ---
+        // 1 entrada (donde llegan los trozos), 1 salida (donde sale el re-ensamblado)
+        
+        Queue<Message> queueEntradaAgg = new LinkedList<>();
+        Slot slotEntradaAgg = new Slot(queueEntradaAgg);
+        
+        Queue<Message> queueSalidaAgg = new LinkedList<>();
+        Slot slotSalidaAgg = new Slot(queueSalidaAgg);
+
+        // Creamos las "paredes de buzones"
+        ArrayList<Slot> seAgg = new ArrayList<>();
+        seAgg.add(slotEntradaAgg);
+        ArrayList<Slot> slAgg = new ArrayList<>();
+        slAgg.add(slotSalidaAgg);
+
+        // Creamos la instancia del Aggregator
+        Aggregator aggregator = new Aggregator(taskEnum.AGGREGATOR, seAgg, slAgg);
+        
+        // --- 2. SIMULACIÓN (La parte más importante) ---
+        
+        // Definimos un ID de Lote para esta prueba
+        int idLotePrueba = 301;
+        System.out.println("Prueba se ejecutará con ID de Lote: " + idLotePrueba);
+
+        // 2a. Simular que el SPLITTER guardó el "Caparazón"
+        System.out.println("Guardando 'Caparazón' en el Diccionario...");
+        try {
+            // Creamos un caparazón (<students></students>)
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document caparazonDoc = db.newDocument();
+            Element raiz = caparazonDoc.createElement("students"); // El nodo padre era <students>
+            caparazonDoc.appendChild(raiz);
+            
+            String xPathInsertar = "//students"; // El XPath que guardó el Splitter
+            
+            // Creamos la "caja" (ValoresDiccionario)
+            ValoresDiccionario vD = new ValoresDiccionario(xPathInsertar, caparazonDoc);
+            
+            // Guardamos la "caja" en el almacén
+            Diccionario.getInstance().put(idLotePrueba, vD);
+
+        } catch (Exception e) {
+            System.err.println("Error creando el caparazón de prueba: " + e.getMessage());
+            return;
+        }
+        
+        // 2b. Simular la llegada de los mensajes "Hijos"
+        System.out.println("Creando y añadiendo mensajes 'Hijos' al buzón de entrada...");
+        try {
+            // Creamos el Hijo 1 (<student id="1">...)
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document docHijo1 = db.parse(new File("src/main/java/resources/hijo1.xml"));
+            
+            // Creamos el Hijo 2 (<student id="2">...)
+            Document docHijo2 = db.parse(new File("src/main/java/resources/hijo2.xml"));
+            
+            // Creamos los "sobres" (Message) con los metadatos correctos
+            // Message(Document, idDocument, idSegment, nSegments)
+            Message msgHijo1 = new Message(docHijo1, idLotePrueba, 1, 2); // Trozo 1 de 2
+            Message msgHijo2 = new Message(docHijo2, idLotePrueba, 2, 2); // Trozo 2 de 2
+
+            // Ponemos los hijos en el buzón de entrada (simulando la llegada)
+            slotEntradaAgg.addMessage(msgHijo1);
+            slotEntradaAgg.addMessage(msgHijo2);
+
+        } catch (Exception e) {
+            System.err.println("Error creando los XML de los hijos: " + e.getMessage());
+            System.err.println("Asegúrate de que 'hijo1.xml' y 'hijo2.xml' existen en 'src/main/java/resources/'");
+            return;
+        }
+        
+        System.out.println("  Buzón Entrada tiene: " + slotEntradaAgg.nMessages() + " mensajes");
+
+        // --- 3. EJECUCIÓN (Probar el Aggregator) ---
+        System.out.println("\n--- EJECUTANDO aggregator.action() en bucle ---");
+        
+        // Llamamos a action() hasta que la entrada esté vacía
+        while (!slotEntradaAgg.isEmpty()) {
+            aggregator.action();
+        }
+
+        // --- 4. VERIFICACIÓN (La Prueba) ---
+        System.out.println("\n--- VERIFICANDO RESULTADOS DEL AGGREGATOR ---");
+        System.out.println("  Buzón Entrada tiene: " + slotEntradaAgg.nMessages() + " mensajes (Debería ser 0)");
+        System.out.println("  Buzón Salida tiene: " + slotSalidaAgg.nMessages() + " mensajes (Debería ser 1)");
+
+        // PRUEBA 1: Comprobar el Buzón de Salida
+        if (slotSalidaAgg.nMessages() == 1) {
+            Message msgFinal = slotSalidaAgg.getFirstMessage();
+            System.out.println("\n--- Mensaje Re-ensamblado ---");
+            System.out.println("  idDocument (Lote): " + msgFinal.getIdDocument()); // Debería ser 301
+            System.out.println("  idSegment: " + msgFinal.getIdSegment());  // Debería ser -1 (porque es un msg padre)
+            System.out.println("  Contenido XML Re-ensamblado:");
+            System.out.println(msgFinal.toString()); // Debería mostrar <students><student.../><student.../></students>
+        } else {
+            System.out.println("¡FALLO! El Aggregator no produjo 1 mensaje de salida.");
+        }
+
+        // PRUEBA 2: Comprobar que el Diccionario esté limpio
+        System.out.println("\n--- 2. Comprobando el Diccionario ---");
+        ValoresDiccionario caparazonRestante = Diccionario.getInstance().get(idLotePrueba);
+        
+        if (caparazonRestante == null) {
+            System.out.println("¡ÉXITO! El caparazón del Lote " + idLotePrueba + " fue borrado del Diccionario.");
+        } else {
+            System.out.println("¡FALLO! El Aggregator no borró el caparazón del Diccionario.");
+        }
+        
+        System.out.println("--- FIN DE LA PRUEBA AGGREGATOR ---");
+        // --- FIN PRUEBA AGGREGATOR ---
+*/
     }
     
     
-    /*
+    
+    
+    
     private static String docToString(Document doc) {
          try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -364,6 +495,6 @@ public class IIA {
             System.out.println("Error tranformacion en docToString: " + ex.getMessage());
             return "Error en la conversion";
         }
-    }*/
+    }
     
 }

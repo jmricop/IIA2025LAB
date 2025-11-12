@@ -13,7 +13,6 @@ import common.Slot;
 import common.Diccionario;
 import common.ValoresDiccionario;
 
-// Imports de Java y JAXP (XML)
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -77,9 +76,6 @@ public class Aggregator extends Task {
         this.xpath = xfactory.newXPath();
     }
 
-    /**
-     * El método que hace el trabajo.
-     */
     @Override
     public void action() {
         
