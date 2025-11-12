@@ -64,4 +64,9 @@ public class Distributor extends Task {
     public void action() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public void mock() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
