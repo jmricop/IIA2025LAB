@@ -51,7 +51,7 @@ public class Message {
         this.idDocument = idDocument;
         this.idSegment = idSegment;
         this.nSegments = nSegmets;
-        System.out.println("Generado mensaje con id = " + this.idMsg + " idDocument = " + this.idDocument + " idSegment = " + this.idSegment + " nSegments = " + this.nSegments);
+        System.out.println("Generating message --> id " + this.idMsg + " idDocument = " + this.idDocument + " idSegment = " + this.idSegment + " nSegments = " + this.nSegments);
     }
 
     public int getIdDocument() {
@@ -89,6 +89,11 @@ public class Message {
     public Document getDocument() {
         return document;
     }
+
+    public void setDocument(Document document) {
+        this.document = document;
+    }
+    
 
     public void setMensaje(Document document) {
         this.document = document;
