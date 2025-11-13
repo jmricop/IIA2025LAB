@@ -31,6 +31,7 @@ public class Message {
 
     private String idMsg;
     private int idDocument;
+    private int correlatorId;
     private int idSegment;
     private int nSegments;
     private Document document;
@@ -41,6 +42,7 @@ public class Message {
         this.idDocument = idDocument;
         this.idSegment = -1;
         this.nSegments = 0;
+        this.correlatorId=-1;
         System.out.println("Generating message --> id " + this.idMsg + " idDocument = " + this.idDocument + " idSegment = " + this.idSegment + " nSegments = " + this.nSegments);
 
     }
@@ -51,6 +53,7 @@ public class Message {
         this.idDocument = idDocument;
         this.idSegment = idSegment;
         this.nSegments = nSegmets;
+        this.correlatorId=-1;        
         System.out.println("Generating message --> id " + this.idMsg + " idDocument = " + this.idDocument + " idSegment = " + this.idSegment + " nSegments = " + this.nSegments);
     }
 
@@ -98,6 +101,15 @@ public class Message {
     public void setMensaje(Document document) {
         this.document = document;
     }
+    
+     public int getCorrelatorId() {
+        return correlatorId;
+    }
+
+    public void setcorrelatorId(int correlatorId) {
+        this.correlatorId = correlatorId;
+    }
+    
 
     @Override
     public String toString() {
