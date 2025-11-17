@@ -52,7 +52,7 @@ public class ContextSlimmer extends Task {
             Document mainDoc = mainMessage.getDocument();
             Document contextDoc = contextMessage.getDocument();
 
-            // Obtener los IDs (o valores clave) desde el contexto
+            // Obtener los valores desde el contexto
             NodeList contextNodes = (NodeList) xpath.evaluate(
                     xPathToSelectContextIds, contextDoc, XPathConstants.NODESET);
 
