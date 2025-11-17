@@ -27,9 +27,8 @@ import org.w3c.dom.NodeList;
 
 public class ContextSlimmer extends Task {
 
-    // --- Expresiones XPath ---
-    private final String xPathToSelectMainNodes;   // Qué nodos del principal se deben analizar/eliminar
-    private final String xPathToSelectContextIds;  // Qué nodos/valores del contexto determinan qué se conserva
+    private final String xPathToSelectMainNodes;  
+    private final String xPathToSelectContextIds;
 
     private final XPath xpath;
 
@@ -90,7 +89,6 @@ public class ContextSlimmer extends Task {
                 }
             }
 
-            // 5️⃣ Crear mensaje de salida con el documento adelgazado
             setMensajeSalida(mainMessage, 0);
 
         } catch (XPathExpressionException e) {
