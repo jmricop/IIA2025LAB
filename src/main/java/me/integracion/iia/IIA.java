@@ -1,11 +1,11 @@
 package me.integracion.iia;
 
-
+import Tasks.enrouters.Distributor;
+import Tasks.enrouters.Merger;
 import Tasks.taskEnum;
-import Tasks.transformators.Aggregator;
-import Tasks.transformators.Splitter;
 import common.Message;
 import common.Slot;
+import java.io.File;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -14,18 +14,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-import javax.xml.parsers.*;
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 public class IIA {
 
@@ -87,7 +75,7 @@ public class IIA {
                 System.out.println("Contenido del mensaje:\n" + msg.toString());
             }
             System.out.println("----------------------");
-/*
+            /*
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
         /*
         // --- DEFINICIÓN DE RUTAS ---
@@ -171,7 +159,7 @@ public class IIA {
             }
         }*/
 
-        /*PRUEBA FILTER CORRECTA
+ /*PRUEBA FILTER CORRECTA
         ArrayList<Slot> es = new ArrayList<>();
         Queue<Message> queueEntrada = new LinkedList<>();
         Slot sEntrada = new Slot(queueEntrada);
@@ -201,9 +189,8 @@ public class IIA {
 
         System.out.println("--- Resultado del Filtro ---");
         filtro.mock();
-        */
-        
-        /*
+             */
+ /*
         // --- INICIO PRUEBA SPLITTER ---
         System.out.println("--- INICIANDO PRUEBA DEL SPLITTER ---");
 
@@ -304,113 +291,103 @@ public class IIA {
         
         System.out.println("--- FIN DE LA PRUEBA ---");
         // --- FIN PRUEBA SPLITTER ---
-        */
-        
-        
-        // --- INICIO PRUEBA MERGER ---
-        System.out.println("\n--- INICIANDO PRUEBA DEL MERGER ---");
+             */
+            // --- INICIO PRUEBA MERGER ---
+            System.out.println("\n--- INICIANDO PRUEBA DEL MERGER ---");
 
-        // --- 1. PREPARACIÓN (Setup) ---
-        // El Merger es lo opuesto: Múltiples entradas, 1 salida.
-        
-        // Creamos los 2 buzones de ENTRADA
-        Queue<Message> queueEntradaA = new LinkedList<>();
-        Slot slotEntradaA = new Slot(queueEntradaA);
-        
-        Queue<Message> queueEntradaB = new LinkedList<>();
-        Slot slotEntradaB = new Slot(queueEntradaB);
-        
-        // Creamos el ÚNICO buzón de SALIDA
-        Queue<Message> queueSalida = new LinkedList<>();
-        Slot slotSalida = new Slot(queueSalida);
+            // --- 1. PREPARACIÓN (Setup) ---
+            // El Merger es lo opuesto: Múltiples entradas, 1 salida.
+            // Creamos los 2 buzones de ENTRADA
+            Queue<Message> queueEntradaA = new LinkedList<>();
+            Slot slotEntradaA = new Slot(queueEntradaA);
 
-        // Creamos la "pared de buzones" de entrada (con 2 buzones)
-        ArrayList<Slot> se = new ArrayList<>();
-        se.add(slotEntradaA);
-        se.add(slotEntradaB);
+            Queue<Message> queueEntradaB = new LinkedList<>();
+            Slot slotEntradaB = new Slot(queueEntradaB);
 
-        // Creamos la "pared de buzones" de salida (con 1 buzón)
-        ArrayList<Slot> sl = new ArrayList<>();
-        sl.add(slotSalida);
+            // Creamos el ÚNICO buzón de SALIDA
+            Queue<Message> queueSalida = new LinkedList<>();
+            Slot slotSalida = new Slot(queueSalida);
 
-        // Creamos la instancia del Merger
-        // (Asegúrate de importar Tasks.transformer.Merger)
-        Merger merger = new Merger(taskEnum.MERGER, se, sl);
+            // Creamos la "pared de buzones" de entrada (con 2 buzones)
+            ArrayList<Slot> se = new ArrayList<>();
+            se.add(slotEntradaA);
+            se.add(slotEntradaB);
 
-        // --- 2. SIMULACIÓN (Poner datos en los buzones de entrada) ---
-        System.out.println("Poniendo mensajes en los buzones de entrada...");
-        
-        // Cargamos un XML de prueba (podemos reusar el de students)
-        Document docPrueba = null;
-        try {
-            // Reutilizamos el 'docToString' de antes si existe, o cargamos de nuevo
-            File inputFile = new File("src/main/java/resources/cdcatalog.xml"); 
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            docPrueba = dBuilder.parse(inputFile);
-        } catch (Exception e) {
-            System.err.println("Error cargando XML para el Merger: " + e.getMessage());
-            return;
-        }
+            // Creamos la "pared de buzones" de salida (con 1 buzón)
+            ArrayList<Slot> sl = new ArrayList<>();
+            sl.add(slotSalida);
 
-        // Creamos 3 mensajes de prueba
-        // (Usamos el constructor simple Message(doc, id) )
-        Message msg1 = new Message(docPrueba, 201);
-        Message msg2 = new Message(docPrueba, 202);
-        Message msg3 = new Message(docPrueba, 203);
+            // Creamos la instancia del Merger
+            // (Asegúrate de importar Tasks.transformer.Merger)
+            Merger merger = new Merger(taskEnum.MERGER, se, sl);
 
-        // Ponemos 2 mensajes en el Buzón A y 1 en el Buzón B
-        slotEntradaA.addMessage(msg1);
-        slotEntradaA.addMessage(msg2);
-        slotEntradaB.addMessage(msg3);
+            // --- 2. SIMULACIÓN (Poner datos en los buzones de entrada) ---
+            System.out.println("Poniendo mensajes en los buzones de entrada...");
 
-        System.out.println("  Buzón A tiene: " + slotEntradaA.nMessages() + " mensajes");
-        System.out.println("  Buzón B tiene: " + slotEntradaB.nMessages() + " mensajes");
-        System.out.println("  Buzón Salida tiene: " + slotSalida.nMessages() + " mensajes");
+            // Cargamos un XML de prueba (podemos reusar el de students)
+            Document docPrueba = null;
+            try {
+                // Reutilizamos el 'docToString' de antes si existe, o cargamos de nuevo
+                File inputFile = new File("src/main/java/resources/cdcatalog.xml");
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                docPrueba = dBuilder.parse(inputFile);
+            } catch (Exception e) {
+                System.err.println("Error cargando XML para el Merger: " + e.getMessage());
+                return;
+            }
 
-        // --- 3. EJECUCIÓN (Probar el Merger) ---
-        
-        System.out.println("\n--- EJECUTANDO merger.action() en bucle ---");
-        
-        // Llamamos a action() repetidamente HASTA QUE ambas entradas estén vacías
-        int iteraciones = 0;
-        while (!slotEntradaA.isEmpty() || !slotEntradaB.isEmpty()) {
-            merger.action();
-            iteraciones++;
-        }
-        System.out.println("El Merger 'action()' se ejecutó " + iteraciones + " veces.");
+            // Creamos 3 mensajes de prueba
+            // (Usamos el constructor simple Message(doc, id) )
+            Message msg1 = new Message(docPrueba, 201);
+            Message msg2 = new Message(docPrueba, 202);
+            Message msg3 = new Message(docPrueba, 203);
 
+            // Ponemos 2 mensajes en el Buzón A y 1 en el Buzón B
+            slotEntradaA.addMessage(msg1);
+            slotEntradaA.addMessage(msg2);
+            slotEntradaB.addMessage(msg3);
 
-        // --- 4. VERIFICACIÓN (La Prueba) ---
-        
-        System.out.println("\n--- VERIFICANDO RESULTADOS DEL MERGER ---");
-        System.out.println("  Buzón A tiene: " + slotEntradaA.nMessages() + " mensajes (Debería ser 0)");
-        System.out.println("  Buzón B tiene: " + slotEntradaB.nMessages() + " mensajes (Debería ser 0)");
-        System.out.println("  Buzón Salida tiene: " + slotSalida.nMessages() + " mensajes (Debería ser 3)");
+            System.out.println("  Buzón A tiene: " + slotEntradaA.nMessages() + " mensajes");
+            System.out.println("  Buzón B tiene: " + slotEntradaB.nMessages() + " mensajes");
+            System.out.println("  Buzón Salida tiene: " + slotSalida.nMessages() + " mensajes");
 
-        System.out.println("\n--- Contenido del Buzón de Salida ---");
-        while (!slotSalida.isEmpty()) {
-            Message msg = slotSalida.getFirstMessage();
-            // Imprimimos el idDocument para ver que están todos
-            System.out.println("  Mensaje encontrado con idDocument: " + msg.getIdDocument()); 
-        }
+            // --- 3. EJECUCIÓN (Probar el Merger) ---
+            System.out.println("\n--- EJECUTANDO merger.action() en bucle ---");
 
-        System.out.println("--- FIN DE LA PRUEBA MERGER ---");
-        // --- FIN PRUEBA MERGER ---
-        
-        
-        // ... (Este código va DENTRO de tu 'public static void main(String[] args)')
-        
-        /*
+            // Llamamos a action() repetidamente HASTA QUE ambas entradas estén vacías
+            int iteraciones = 0;
+            while (!slotEntradaA.isEmpty() || !slotEntradaB.isEmpty()) {
+                merger.action();
+                iteraciones++;
+            }
+            System.out.println("El Merger 'action()' se ejecutó " + iteraciones + " veces.");
+
+            // --- 4. VERIFICACIÓN (La Prueba) ---
+            System.out.println("\n--- VERIFICANDO RESULTADOS DEL MERGER ---");
+            System.out.println("  Buzón A tiene: " + slotEntradaA.nMessages() + " mensajes (Debería ser 0)");
+            System.out.println("  Buzón B tiene: " + slotEntradaB.nMessages() + " mensajes (Debería ser 0)");
+            System.out.println("  Buzón Salida tiene: " + slotSalida.nMessages() + " mensajes (Debería ser 3)");
+
+            System.out.println("\n--- Contenido del Buzón de Salida ---");
+            while (!slotSalida.isEmpty()) {
+                Message msg = slotSalida.getFirstMessage();
+                // Imprimimos el idDocument para ver que están todos
+                System.out.println("  Mensaje encontrado con idDocument: " + msg.getIdDocument());
+            }
+
+            System.out.println("--- FIN DE LA PRUEBA MERGER ---");
+            // --- FIN PRUEBA MERGER ---
+
+            // ... (Este código va DENTRO de tu 'public static void main(String[] args)')
+            /*
         // --- INICIO PRUEBA MERGER ---
         // (Tu código de prueba del Merger)
         System.out.println("--- FIN DE LA PRUEBA MERGER ---");
         // --- FIN PRUEBA MERGER ---
-        */
-
-
-        // --- INICIO PRUEBA AGGREGATOR ---
-        /*
+             */
+            // --- INICIO PRUEBA AGGREGATOR ---
+            /*
         System.out.println("\n--- INICIANDO PRUEBA DEL AGGREGATOR ---");
 
         // --- 1. PREPARACIÓN (Setup) ---
@@ -525,13 +502,10 @@ public class IIA {
         
         System.out.println("--- FIN DE LA PRUEBA AGGREGATOR ---");
         // --- FIN PRUEBA AGGREGATOR ---
-*/
-    }
-    
-    
-    
-    
-    
+             */
+        }
+
+        /*
     private static String docToString(Document doc) {
          try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -544,5 +518,6 @@ public class IIA {
             System.out.println("Error tranformacion en docToString: " + ex.getMessage());
             return "Error en la conversion";
         }
-    }
+    }*/
+    }   
 }

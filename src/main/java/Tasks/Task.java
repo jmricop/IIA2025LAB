@@ -59,6 +59,10 @@ public abstract class Task {
         return exitSlot;
     }
     
+    public ArrayList<Slot> getslotsEntrada() {
+        return entrySlot;
+    }
+    
     public int getNumEntrySlots() {
         // Asumiendo que tu variable ArrayList se llama "entrySlot"
         return entrySlot.size();
