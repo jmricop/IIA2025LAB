@@ -52,10 +52,7 @@ public class Slimmer extends Task {
         this.transformer = factory.newTransformer(xsltSource);
     }
 
-    /**
-     * Lógica principal del Slimmer.
-     * Aplica la transformación XSLT al mensaje de entrada.
-     */
+    
     @Override
     public void action() {
         try {
