@@ -20,6 +20,8 @@ public enum taskEnum {
     
     SPLITTER(taskType.ROUTER, "Splits a large message into several smaller ones"),
     ROUTER(taskType.ROUTER, "Sends a message to a destination based on content"),
+    DISTRIBUTOR(taskType.DISTRIBUTOR, "distributor si"),
+
     
     // --- TRANSFORMERS ---
     MERGER(taskType.TRANSFORMER, "Aggregates several small messages into one large one"),
@@ -28,7 +30,9 @@ public enum taskEnum {
     
     // --- MODIFIERS ---
     ENRICHER(taskType.MODIFIER, "Adds data to the message from an external source"),
-    FILTER(taskType.MODIFIER, "Removes parts of the message that do not meet criteria");
+    FILTER(taskType.MODIFIER, "Removes parts of the message that do not meet criteria"),
+    CONTEXTSLIMMER(taskType.MODIFIER, "Removes parts of the message that do not meet context");
+
 
     
     private final taskType type;
