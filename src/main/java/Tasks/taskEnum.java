@@ -26,6 +26,7 @@ public enum taskEnum {
     // --- TRANSFORMERS ---
     MERGER(taskType.TRANSFORMER, "Aggregates several small messages into one large one"),
     TRANSLATOR(taskType.TRANSFORMER, "Transforms one data format to another (e.g., XML to JSON)"),
+    AGGREGATOR(taskType.TRANSFORMER,"Add nodes to the entry data"),
     
     // --- MODIFIERS ---
     ENRICHER(taskType.MODIFIER, "Adds data to the message from an external source"),

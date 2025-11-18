@@ -1,8 +1,9 @@
 package me.integracion.iia;
 
-import Tasks.enrouters.Distributor;
-import Tasks.Task;
+
 import Tasks.taskEnum;
+import Tasks.transformators.Aggregator;
+import Tasks.transformators.Splitter;
 import common.Message;
 import common.Slot;
 import org.w3c.dom.Document;
@@ -13,6 +14,18 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 public class IIA {
 
@@ -189,6 +202,347 @@ public class IIA {
         System.out.println("--- Resultado del Filtro ---");
         filtro.mock();
         */
+        
+        /*
+        // --- INICIO PRUEBA SPLITTER ---
+        System.out.println("--- INICIANDO PRUEBA DEL SPLITTER ---");
+
+        // --- 1. PREPARACIÓN (Setup) ---
+        // Asegúrate de que tu XML está en "resources/students.xml"
+        String rutaXmlEntrada = "src/main/java/resources/cdcatalog.xml";
+        String xPathReceta = "//students/student"; // La "receta" XPath para cortar
+
+        // Creamos los "buzones" de entrada y salida
+        Queue<Message> queueEntrada = new LinkedList<>();
+        Slot slotEntrada = new Slot(queueEntrada);
+        
+        Queue<Message> queueSalida = new LinkedList<>();
+        Slot slotSalida = new Slot(queueSalida);
+
+        // Creamos las "paredes de buzones" (ArrayLists) que pide el constructor de Task
+        ArrayList<Slot> se = new ArrayList<>();
+        se.add(slotEntrada);
+        ArrayList<Slot> sl = new ArrayList<>();
+        sl.add(slotSalida);
+
+        // Creamos la instancia del Splitter
+        // (Asegúrate de que la importación "Tasks.transformer.Splitter" es correcta)
+        Splitter splitter = new Splitter(taskEnum.SPLITTER, se, sl);
+        
+        // Configuramos la receta XPath
+        splitter.setXPathExpression(xPathReceta);
+
+        // --- 2. SIMULACIÓN (Simular el EntryPort) ---
+        
+        // Generamos un ID de lote
+        int idLotePadre = IdUnico.getInstance().getNextIdDocument(); // (Esto devolverá 1)
+        
+        System.out.println("Cargando XML: " + rutaXmlEntrada);
+        System.out.println("ID de Lote generado: " + idLotePadre);
+
+        // Cargamos el XML desde el archivo
+        Document docPadre = null;
+        try {
+            File inputFile = new File(rutaXmlEntrada);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            docPadre = dBuilder.parse(inputFile);
+            docPadre.getDocumentElement().normalize();
+        } catch (Exception e) {
+            System.err.println("Error fatal al cargar el XML de prueba: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+        // Creamos el mensaje "Padre" (como haría el EntryPort)
+        // (Usamos el constructor Message(Document, int idDocument))
+        Message msgPadre = new Message(docPadre, idLotePadre);
+
+        // Ponemos el mensaje "Padre" en el buzón de entrada
+        slotEntrada.addMessage(msgPadre);
+        System.out.println("Mensaje 'Padre' puesto en el Buzón de Entrada.");
+
+        // --- 3. EJECUCIÓN (Probar el Splitter) ---
+        
+        System.out.println("\n--- EJECUTANDO splitter.action() ---\n");
+        // Aquí se llama a la lógica que hemos estado analizando
+        splitter.action();
+
+        // --- 4. VERIFICACIÓN (La Prueba) ---
+        
+        System.out.println("--- VERIFICANDO RESULTADOS ---");
+
+        // PRUEBA 1: Comprobar el Buzón de Salida
+        System.out.println("\n--- 1. Comprobando Buzón de Salida ---");
+        System.out.println("Mensajes en Salida: " + slotSalida.nMessages()); // Debería ser 2
+
+        int contadorHijos = 1;
+        while (!slotSalida.isEmpty()) {
+            Message msgHijo = slotSalida.getFirstMessage();
+            System.out.println("\n--- Hijo " + contadorHijos++ + " ---");
+            System.out.println("  idDocument (Lote): " + msgHijo.getIdDocument()); // Debería ser 1
+            System.out.println("  idSegment (Trozo): " + msgHijo.getIdSegment());  // Debería ser 1, luego 2
+            System.out.println("  nSegments (Total): " + msgHijo.getnSegments());  // Debería ser 2
+            System.out.println("  Contenido XML:");
+            System.out.println(msgHijo.toString()); // Usa el .toString() de tu Message
+        }
+
+        // PRUEBA 2: Comprobar el Diccionario (el "Caparazón")
+        System.out.println("\n--- 2. Comprobando el Diccionario ---");
+        Diccionario dict = Diccionario.getInstance();
+        ValoresDiccionario caparazonGuardado = dict.get(idLotePadre); // Pide el Lote 1
+
+        if (caparazonGuardado != null) {
+            System.out.println("¡ÉXITO! Se encontró el caparazón del Lote " + idLotePadre);
+            System.out.println("Ruta XPath guardada: " + caparazonGuardado.getXPathDondeInsertar()); // Debería ser "//students"
+            System.out.println("Contenido del Caparazón guardado:");
+            // Usamos el helper "docToString" para imprimir el Document
+            System.out.println(docToString(caparazonGuardado.getCaparazon())); // Debería ser <students></students>
+        } else {
+            System.out.println("¡FALLO! No se encontró el caparazón del Lote " + idLotePadre + " en el Diccionario.");
+        }
+        
+        System.out.println("--- FIN DE LA PRUEBA ---");
+        // --- FIN PRUEBA SPLITTER ---
+        */
+        
+        
+        // --- INICIO PRUEBA MERGER ---
+        System.out.println("\n--- INICIANDO PRUEBA DEL MERGER ---");
+
+        // --- 1. PREPARACIÓN (Setup) ---
+        // El Merger es lo opuesto: Múltiples entradas, 1 salida.
+        
+        // Creamos los 2 buzones de ENTRADA
+        Queue<Message> queueEntradaA = new LinkedList<>();
+        Slot slotEntradaA = new Slot(queueEntradaA);
+        
+        Queue<Message> queueEntradaB = new LinkedList<>();
+        Slot slotEntradaB = new Slot(queueEntradaB);
+        
+        // Creamos el ÚNICO buzón de SALIDA
+        Queue<Message> queueSalida = new LinkedList<>();
+        Slot slotSalida = new Slot(queueSalida);
+
+        // Creamos la "pared de buzones" de entrada (con 2 buzones)
+        ArrayList<Slot> se = new ArrayList<>();
+        se.add(slotEntradaA);
+        se.add(slotEntradaB);
+
+        // Creamos la "pared de buzones" de salida (con 1 buzón)
+        ArrayList<Slot> sl = new ArrayList<>();
+        sl.add(slotSalida);
+
+        // Creamos la instancia del Merger
+        // (Asegúrate de importar Tasks.transformer.Merger)
+        Merger merger = new Merger(taskEnum.MERGER, se, sl);
+
+        // --- 2. SIMULACIÓN (Poner datos en los buzones de entrada) ---
+        System.out.println("Poniendo mensajes en los buzones de entrada...");
+        
+        // Cargamos un XML de prueba (podemos reusar el de students)
+        Document docPrueba = null;
+        try {
+            // Reutilizamos el 'docToString' de antes si existe, o cargamos de nuevo
+            File inputFile = new File("src/main/java/resources/cdcatalog.xml"); 
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            docPrueba = dBuilder.parse(inputFile);
+        } catch (Exception e) {
+            System.err.println("Error cargando XML para el Merger: " + e.getMessage());
+            return;
+        }
+
+        // Creamos 3 mensajes de prueba
+        // (Usamos el constructor simple Message(doc, id) )
+        Message msg1 = new Message(docPrueba, 201);
+        Message msg2 = new Message(docPrueba, 202);
+        Message msg3 = new Message(docPrueba, 203);
+
+        // Ponemos 2 mensajes en el Buzón A y 1 en el Buzón B
+        slotEntradaA.addMessage(msg1);
+        slotEntradaA.addMessage(msg2);
+        slotEntradaB.addMessage(msg3);
+
+        System.out.println("  Buzón A tiene: " + slotEntradaA.nMessages() + " mensajes");
+        System.out.println("  Buzón B tiene: " + slotEntradaB.nMessages() + " mensajes");
+        System.out.println("  Buzón Salida tiene: " + slotSalida.nMessages() + " mensajes");
+
+        // --- 3. EJECUCIÓN (Probar el Merger) ---
+        
+        System.out.println("\n--- EJECUTANDO merger.action() en bucle ---");
+        
+        // Llamamos a action() repetidamente HASTA QUE ambas entradas estén vacías
+        int iteraciones = 0;
+        while (!slotEntradaA.isEmpty() || !slotEntradaB.isEmpty()) {
+            merger.action();
+            iteraciones++;
+        }
+        System.out.println("El Merger 'action()' se ejecutó " + iteraciones + " veces.");
+
+
+        // --- 4. VERIFICACIÓN (La Prueba) ---
+        
+        System.out.println("\n--- VERIFICANDO RESULTADOS DEL MERGER ---");
+        System.out.println("  Buzón A tiene: " + slotEntradaA.nMessages() + " mensajes (Debería ser 0)");
+        System.out.println("  Buzón B tiene: " + slotEntradaB.nMessages() + " mensajes (Debería ser 0)");
+        System.out.println("  Buzón Salida tiene: " + slotSalida.nMessages() + " mensajes (Debería ser 3)");
+
+        System.out.println("\n--- Contenido del Buzón de Salida ---");
+        while (!slotSalida.isEmpty()) {
+            Message msg = slotSalida.getFirstMessage();
+            // Imprimimos el idDocument para ver que están todos
+            System.out.println("  Mensaje encontrado con idDocument: " + msg.getIdDocument()); 
+        }
+
+        System.out.println("--- FIN DE LA PRUEBA MERGER ---");
+        // --- FIN PRUEBA MERGER ---
+        
+        
+        // ... (Este código va DENTRO de tu 'public static void main(String[] args)')
+        
+        /*
+        // --- INICIO PRUEBA MERGER ---
+        // (Tu código de prueba del Merger)
+        System.out.println("--- FIN DE LA PRUEBA MERGER ---");
+        // --- FIN PRUEBA MERGER ---
+        */
+
+
+        // --- INICIO PRUEBA AGGREGATOR ---
+        /*
+        System.out.println("\n--- INICIANDO PRUEBA DEL AGGREGATOR ---");
+
+        // --- 1. PREPARACIÓN (Setup) ---
+        // 1 entrada (donde llegan los trozos), 1 salida (donde sale el re-ensamblado)
+        
+        Queue<Message> queueEntradaAgg = new LinkedList<>();
+        Slot slotEntradaAgg = new Slot(queueEntradaAgg);
+        
+        Queue<Message> queueSalidaAgg = new LinkedList<>();
+        Slot slotSalidaAgg = new Slot(queueSalidaAgg);
+
+        // Creamos las "paredes de buzones"
+        ArrayList<Slot> seAgg = new ArrayList<>();
+        seAgg.add(slotEntradaAgg);
+        ArrayList<Slot> slAgg = new ArrayList<>();
+        slAgg.add(slotSalidaAgg);
+
+        // Creamos la instancia del Aggregator
+        Aggregator aggregator = new Aggregator(taskEnum.AGGREGATOR, seAgg, slAgg);
+        
+        // --- 2. SIMULACIÓN (La parte más importante) ---
+        
+        // Definimos un ID de Lote para esta prueba
+        int idLotePrueba = 301;
+        System.out.println("Prueba se ejecutará con ID de Lote: " + idLotePrueba);
+
+        // 2a. Simular que el SPLITTER guardó el "Caparazón"
+        System.out.println("Guardando 'Caparazón' en el Diccionario...");
+        try {
+            // Creamos un caparazón (<students></students>)
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document caparazonDoc = db.newDocument();
+            Element raiz = caparazonDoc.createElement("students"); // El nodo padre era <students>
+            caparazonDoc.appendChild(raiz);
+            
+            String xPathInsertar = "//students"; // El XPath que guardó el Splitter
+            
+            // Creamos la "caja" (ValoresDiccionario)
+            ValoresDiccionario vD = new ValoresDiccionario(xPathInsertar, caparazonDoc);
+            
+            // Guardamos la "caja" en el almacén
+            Diccionario.getInstance().put(idLotePrueba, vD);
+
+        } catch (Exception e) {
+            System.err.println("Error creando el caparazón de prueba: " + e.getMessage());
+            return;
+        }
+        
+        // 2b. Simular la llegada de los mensajes "Hijos"
+        System.out.println("Creando y añadiendo mensajes 'Hijos' al buzón de entrada...");
+        try {
+            // Creamos el Hijo 1 (<student id="1">...)
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document docHijo1 = db.parse(new File("src/main/java/resources/hijo1.xml"));
+            
+            // Creamos el Hijo 2 (<student id="2">...)
+            Document docHijo2 = db.parse(new File("src/main/java/resources/hijo2.xml"));
+            
+            // Creamos los "sobres" (Message) con los metadatos correctos
+            // Message(Document, idDocument, idSegment, nSegments)
+            Message msgHijo1 = new Message(docHijo1, idLotePrueba, 1, 2); // Trozo 1 de 2
+            Message msgHijo2 = new Message(docHijo2, idLotePrueba, 2, 2); // Trozo 2 de 2
+
+            // Ponemos los hijos en el buzón de entrada (simulando la llegada)
+            slotEntradaAgg.addMessage(msgHijo1);
+            slotEntradaAgg.addMessage(msgHijo2);
+
+        } catch (Exception e) {
+            System.err.println("Error creando los XML de los hijos: " + e.getMessage());
+            System.err.println("Asegúrate de que 'hijo1.xml' y 'hijo2.xml' existen en 'src/main/java/resources/'");
+            return;
+        }
+        
+        System.out.println("  Buzón Entrada tiene: " + slotEntradaAgg.nMessages() + " mensajes");
+
+        // --- 3. EJECUCIÓN (Probar el Aggregator) ---
+        System.out.println("\n--- EJECUTANDO aggregator.action() en bucle ---");
+        
+        // Llamamos a action() hasta que la entrada esté vacía
+        while (!slotEntradaAgg.isEmpty()) {
+            aggregator.action();
+        }
+
+        // --- 4. VERIFICACIÓN (La Prueba) ---
+        System.out.println("\n--- VERIFICANDO RESULTADOS DEL AGGREGATOR ---");
+        System.out.println("  Buzón Entrada tiene: " + slotEntradaAgg.nMessages() + " mensajes (Debería ser 0)");
+        System.out.println("  Buzón Salida tiene: " + slotSalidaAgg.nMessages() + " mensajes (Debería ser 1)");
+
+        // PRUEBA 1: Comprobar el Buzón de Salida
+        if (slotSalidaAgg.nMessages() == 1) {
+            Message msgFinal = slotSalidaAgg.getFirstMessage();
+            System.out.println("\n--- Mensaje Re-ensamblado ---");
+            System.out.println("  idDocument (Lote): " + msgFinal.getIdDocument()); // Debería ser 301
+            System.out.println("  idSegment: " + msgFinal.getIdSegment());  // Debería ser -1 (porque es un msg padre)
+            System.out.println("  Contenido XML Re-ensamblado:");
+            System.out.println(msgFinal.toString()); // Debería mostrar <students><student.../><student.../></students>
+        } else {
+            System.out.println("¡FALLO! El Aggregator no produjo 1 mensaje de salida.");
+        }
+
+        // PRUEBA 2: Comprobar que el Diccionario esté limpio
+        System.out.println("\n--- 2. Comprobando el Diccionario ---");
+        ValoresDiccionario caparazonRestante = Diccionario.getInstance().get(idLotePrueba);
+        
+        if (caparazonRestante == null) {
+            System.out.println("¡ÉXITO! El caparazón del Lote " + idLotePrueba + " fue borrado del Diccionario.");
+        } else {
+            System.out.println("¡FALLO! El Aggregator no borró el caparazón del Diccionario.");
+        }
+        
+        System.out.println("--- FIN DE LA PRUEBA AGGREGATOR ---");
+        // --- FIN PRUEBA AGGREGATOR ---
+*/
     }
-}
+    
+    
+    
+    
+    
+    private static String docToString(Document doc) {
+         try {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            StringWriter stringWriter = new StringWriter();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes"); // Para que se vea bonito
+            transformer.transform(new DOMSource(doc), new StreamResult(stringWriter));
+            return stringWriter.toString();
+        } catch (TransformerException ex) {
+            System.out.println("Error tranformacion en docToString: " + ex.getMessage());
+            return "Error en la conversion";
+        }
+    }
 }
