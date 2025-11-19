@@ -6,6 +6,7 @@ package Port.ports;
 
 import Port.Port;
 import common.Message;
+import common.Slot;
 
 /**
  *
@@ -13,14 +14,22 @@ import common.Message;
  */
 public class EntryPort extends Port {
 
+    public EntryPort(Slot buffer) {
+        super(buffer);
+    }
+
     @Override
     public Message read() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+       
+        return null;
+    
     }
 
     @Override
     public void write(Message msg) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
+        this.buffer.addMessage(msg);
+    
     }
     
 }

@@ -13,10 +13,24 @@ import common.Slot;
  */
 public abstract class Port {
     
-    private Slot buffer;
+    protected Slot buffer;
     
     public abstract Message read();
     public abstract void write(Message msg);
+
+    public Port(Slot buffer) {
+        this.buffer = buffer;
+    }
+
+    public Slot getBuffer() {
+        return buffer;
+    }
+
+    public void setBuffer(Slot buffer) {
+        this.buffer = buffer;
+    }
+    
+    
             
     
 }
