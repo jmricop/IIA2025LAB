@@ -21,16 +21,19 @@ public enum taskEnum {
     SPLITTER(taskType.ROUTER, "Splits a large message into several smaller ones"),
     ROUTER(taskType.ROUTER, "Sends a message to a destination based on content"),
     DISTRIBUTOR(taskType.DISTRIBUTOR, "distributor si"),
+    CORRELATOR(taskType.ROUTER, "Correlates messages form different inputs and aligns them into ordered outputs"),
 
     
     // --- TRANSFORMERS ---
     MERGER(taskType.TRANSFORMER, "Aggregates several small messages into one large one"),
     TRANSLATOR(taskType.TRANSFORMER, "Transforms one data format to another (e.g., XML to JSON)"),
+    AGGREGATOR(taskType.TRANSFORMER,"Add nodes to the entry data"),
     
     // --- MODIFIERS ---
     ENRICHER(taskType.MODIFIER, "Adds data to the message from an external source"),
     FILTER(taskType.MODIFIER, "Removes parts of the message that do not meet criteria"),
-    CONTEXTSLIMMER(taskType.MODIFIER, "Removes parts of the message that do not meet context");
+    CONTEXTSLIMMER(taskType.MODIFIER, "Removes parts of the message that do not meet context"),
+    CORRELATORIDSETTER(taskType.MODIFIER, "Asigns a correlatorID to messages");
 
 
     

@@ -44,7 +44,7 @@ public class PruebaCorrelatorIdSetter {
             slotEntrada.addMessage(msg);
 
             // --- Crear tarea y ejecutarla ---
-            CorrelationIdSetter correlatorIdSetter = new CorrelationIdSetter(taskEnum.CONTEXTSLIMMER, entradas, salidas);
+            CorrelationIdSetter correlatorIdSetter = new CorrelationIdSetter(taskEnum.CORRELATORIDSETTER, entradas, salidas);
             correlatorIdSetter.action();
 
             // --- Mostrar resultado ---

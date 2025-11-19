@@ -27,8 +27,8 @@ public class Translator extends Task {
 
     private String xPathQuery;
 
-    public Translator(taskEnum t, ArrayList<Slot> es, ArrayList<Slot> exsl, String query) {
-        super(t, es, exsl);
+    public Translator(taskEnum t, ArrayList<Slot> entrySlots, ArrayList<Slot> exitSlots, String query) {
+        super(t, entrySlots, exitSlots);
         this.xPathQuery = query;
     }
 
