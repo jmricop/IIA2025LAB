@@ -58,7 +58,7 @@ public class Translator extends Task {
                         mensajeEntrada.getIdSegment(),
                         mensajeEntrada.getnSegments()
                 );
-
+                mensajeSalida.setcorrelatorId(mensajeEntrada.getCorrelatorId());
                 setMensajeSalida(mensajeSalida, 0);
 
             } catch (Exception e) {
