@@ -30,7 +30,7 @@ public class CorrelationIdSetter extends Task {
             Message mensaje = getEntryMessage(0);
             
             correlatorId++;
-            mensaje.setIdDocument(correlatorId);
+            mensaje.setcorrelatorId(correlatorId);
             setMensajeSalida(mensaje, 0);
 
         } else {

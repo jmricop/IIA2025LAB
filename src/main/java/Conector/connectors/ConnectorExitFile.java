@@ -2,9 +2,9 @@ package Conector.connectors;
 
 import Conector.Conector;
 import Port.Port;
-import Port.ports.ExitPort; // Asegúrate de tener esta clase o usar Port genérico
-import common.Slot; // Importa tu clase Slot
-import common.Message; // Importa tu clase Message
+import Port.ports.ExitPort; 
+import common.Slot; 
+import common.Message; 
 
 import java.io.File;
 import java.util.LinkedList;

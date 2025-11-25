@@ -28,43 +28,66 @@ public class ConnectorEntryFile extends Conector {
 
     private final String inputDirectory;
 
-   
     public ConnectorEntryFile(Port port, String inputDirectory) {
-        
+
         super(port);
-        Queue<Message> queue = new LinkedList<>();
-        this.port = new EntryPort(new Slot(queue));
         this.inputDirectory = inputDirectory;
     }
 
     @Override
     public void action() {
+        System.out.println("--- DEBUG CONECTOR ---");
+        System.out.println("Ruta configurada: " + inputDirectory);
+
         File folder = new File(inputDirectory);
+
+        // 1. Verificaciones básicas
+        if (!folder.exists()) {
+            System.err.println("ERROR: ¡La carpeta NO EXISTE en el disco!");
+            return;
+        }
+        if (!folder.isDirectory()) {
+            System.err.println("ERROR: La ruta apunta a un archivo, no a una carpeta.");
+            return;
+        }
+
+        // 2. Listar contenido
         File[] listOfFiles = folder.listFiles();
+        if (listOfFiles == null) {
+            System.err.println("ERROR: Fallo de I/O al leer la carpeta (¿Permisos?).");
+            return;
+        }
 
-        if (listOfFiles == null) return;
+        System.out.println("Archivos encontrados en la carpeta: " + listOfFiles.length);
 
+        // 3. Procesar archivos
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
 
             for (File file : listOfFiles) {
-                if (file.isFile() && file.getName().endsWith(".xml")) {
-                    
-                    
-                    Document doc = db.parse(file);
-                    
-                    
-                    Message msg = new Message(doc, Integer.parseInt(UUID.randomUUID().toString()));
-                    
-                    port.write(msg);
-                    
-                    System.out.println("Conector: Archivo leído e inyectado: " + file.getName());
+                System.out.println(" -> Analizando: " + file.getName());
 
-                    
+                if (file.isFile() && file.getName().toLowerCase().endsWith(".xml")) {
+                    System.out.println("    [OK] Es un XML válido. Procesando...");
+
+                    Document doc = db.parse(file);
+
+                    // UUID aleatorio como ID del mensaje
+                    Message msg = new Message(doc, Integer.parseInt(java.util.UUID.randomUUID().toString().replaceAll("\\D", "").substring(0, 5)));
+
+                    port.write(msg);
+                    System.out.println("    [EXITO] Mensaje inyectado al puerto.");
+
+                    // OPCIONAL: Mover o renombrar el archivo para no procesarlo infinitamente
+                    // file.renameTo(new File(file.getAbsolutePath() + ".processed"));
+                } else {
+                    System.out.println("    [IGNORADO] No es un archivo o no acaba en .xml");
                 }
             }
-        } catch (IOException | NumberFormatException | ParserConfigurationException | SAXException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        System.out.println("----------------------");
     }
 }
