@@ -1,3 +1,4 @@
+package Tasks.enrouters;
 import Tasks.Task;
 import Tasks.taskEnum;
 import common.Message;
@@ -38,36 +39,31 @@ public class Replicator extends Task {
     }
 
     @Override
-    public void action() {
-        try {
+public void action() {
+    try {
+        if (isEmpty(0)) return;
+
+        Message originalMsg = getEntryMessage(0);
+        Document originalDoc = originalMsg.getDocument();
+        int numSalidas = getNSalidas(); 
+
+        for (int i = 0; i < numSalidas; i++) {
+            Document copiedDoc = cloneDocument(originalDoc);
             
-            if (isEmpty(0)) {
-                return;
-            }
-
+            // Generamos un nuevo mensaje
+            Message copyMsg = new Message(copiedDoc, Integer.parseInt(UUID.randomUUID().toString()));
             
-            Message originalMsg = getEntryMessage(0);
-            Document originalDoc = originalMsg.getDocument();
+            // --- [NUEVO] --- IMPORTANTE: Copiamos el Correlator ID del padre
+            // Sin esto, el Correlator posterior no sabrá unir las parejas.
+            copyMsg.setcorrelatorId(originalMsg.getCorrelatorId());
+            // -----------------------------------------------------------
 
-            
-            int numSalidas = getNSalidas(); 
-
-            for (int i = 0; i < numSalidas; i++) {
-                
-                
-                Document copiedDoc = cloneDocument(originalDoc);
-
-                
-                Message copyMsg = new Message(copiedDoc,Integer.parseInt(UUID.randomUUID().toString()));
-
-                
-                setMensajeSalida(copyMsg, i);
-            }
-
-        } catch (Exception e) {
-            Logger.getLogger(Replicator.class.getName()).log(Level.SEVERE, "Error en Replicator", e);
+            setMensajeSalida(copyMsg, i);
         }
+    } catch (Exception e) {
+        Logger.getLogger(Replicator.class.getName()).log(Level.SEVERE, "Error en Replicator", e);
     }
+}
 
     @Override
     public void mock() {

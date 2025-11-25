@@ -47,6 +47,11 @@ public class ContextEnricher extends Task {
     
     @Override
     public void action() {
+        
+        if (isEmpty(0) || isEmpty(1)) {
+            return;
+        }
+        
         try {
 
            

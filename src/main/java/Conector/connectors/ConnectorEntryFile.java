@@ -67,5 +67,4 @@ public class ConnectorEntryFile extends Conector {
         } catch (IOException | NumberFormatException | ParserConfigurationException | SAXException e) {
         }
     }
-    
 }

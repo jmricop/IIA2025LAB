@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comanda id="1">
+    <cliente>Cliente Prueba</cliente>
+    <lista_bebidas>
+        <bebida id="1">
+            <tipo>fria</tipo>
+            <nombre>CocaCola</nombre>
+        </bebida>
+        <bebida id="2">
+            <tipo>caliente</tipo>
+            <nombre>CafeSolo</nombre>
+        </bebida>
+    </lista_bebidas>
+</comanda>

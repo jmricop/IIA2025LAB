@@ -14,6 +14,5 @@ package Tasks;
 public enum taskType {
     ROUTER,     
     TRANSFORMER, 
-    MODIFIER,
-    DISTRIBUTOR;
+    MODIFIER;
 }
