@@ -67,12 +67,12 @@ public class CafeteriaPruebas {
             }
         };
 
-        ConnectorEntryFile conectorEntrada = new ConnectorEntryFile(portEntrada, "C:\\Users\\apolo\\OneDrive\\Escritorio\\IIA\\ProyectoIIA\\src\\main\\java\\resources\\inputs");
+        ConnectorEntryFile conectorEntrada = new ConnectorEntryFile(portEntrada, "src/main/java/resources/inputs");
 
         ArrayList<Slot> splitIn = new ArrayList<>(List.of(s0_Entrada));
         ArrayList<Slot> splitOut = new ArrayList<>(List.of(s1_SplitterOut));
         Splitter splitter = new Splitter(taskEnum.SPLITTER, splitIn, splitOut);
-        splitter.setXPathExpression("//lista_bebidas/bebida");
+        splitter.setXPathExpression("//drinks/drink");
 
         // --- ID SETTER (Para que el Distributor/Correlator funcionen bien) ---
         ArrayList<Slot> idIn = new ArrayList<>(List.of(s1_SplitterOut));
@@ -81,7 +81,7 @@ public class CafeteriaPruebas {
 
         ArrayList<Slot> distIn = new ArrayList<>(List.of(s2_ConId));
         ArrayList<Slot> distOut = new ArrayList<>(List.of(s3_Fria, s4_Caliente));
-        String[] condiciones = {"fria", "caliente"};
+        String[] condiciones = {"hot", "cold"};
         Distributor distributor = new Distributor(taskEnum.DISTRIBUTOR, distIn, distOut, condiciones, 2, "tipo");
 
         // ================= RAMA FRÍA =================
@@ -115,7 +115,7 @@ public class CafeteriaPruebas {
                     // Para simplificar, asumimos que el XML sigue teniendo info legible.
 
                     // Simulación de consulta a BD
-                    String estado = consultarStockBD("CocaCola"); // Simplificado para el ejemplo
+                    String estado = consultarStockBD("coca-cola"); // Simplificado para el ejemplo
 
                     // Crear XML de respuesta
                     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -135,7 +135,7 @@ public class CafeteriaPruebas {
                     responseMsg.setcorrelatorId(msg.getCorrelatorId());
 
                     setMensajeSalida(responseMsg, 0);
-                    System.out.println("🧊 Barman Frío: Bebida procesada.");
+                    System.out.println("Barman Frío: Bebida procesada.");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -152,7 +152,7 @@ public class CafeteriaPruebas {
 
         ArrayList<Slot> enrichFriaIn = new ArrayList<>(List.of(s9_Fria_Corr_Main, s9_Fria_Corr_Ctx));
         ArrayList<Slot> enrichFriaOut = new ArrayList<>(List.of(s10_Fria_Enriched));
-        ContextEnricher enrichFria = new ContextEnricher(enrichFriaIn, enrichFriaOut, "//respuesta_barman", "//bebida", taskEnum.ENRICHER);
+        ContextEnricher enrichFria = new ContextEnricher(enrichFriaIn, enrichFriaOut, "//respuesta_barman", "//drink", taskEnum.ENRICHER);
 
         // ================= RAMA CALIENTE =================
         // Repetimos la estructura exacta de arriba (Pasos f, g, h...)
@@ -177,7 +177,7 @@ public class CafeteriaPruebas {
                 }
                 Message msg = getEntryMessage(0);
                 try {
-                    String estado = consultarStockBD("CafeSolo"); // Simplificado
+                    String estado = consultarStockBD("cafe"); // Simplificado
 
                     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                     Document respDoc = dbf.newDocumentBuilder().newDocument();
@@ -194,7 +194,7 @@ public class CafeteriaPruebas {
                     );
                     responseMsg.setcorrelatorId(msg.getCorrelatorId());
                     setMensajeSalida(responseMsg, 0);
-                    System.out.println("☕ Barman Caliente: Bebida procesada.");
+                    System.out.println("Barman Caliente: Bebida procesada.");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -213,7 +213,7 @@ public class CafeteriaPruebas {
         // Enricher
         ArrayList<Slot> enrichCalIn = new ArrayList<>(List.of(s15_Cal_Corr_Main, s15_Cal_Corr_Ctx));
         ArrayList<Slot> enrichCalOut = new ArrayList<>(List.of(s16_Cal_Enriched));
-        ContextEnricher enrichCal = new ContextEnricher(enrichCalIn, enrichCalOut, "//respuesta_barman", "//bebida", taskEnum.ENRICHER);
+        ContextEnricher enrichCal = new ContextEnricher(enrichCalIn, enrichCalOut, "//respuesta_barman", "//drink", taskEnum.ENRICHER);
 
         // ================= REUNIFICACIÓN =================
         ArrayList<Slot> mergIn = new ArrayList<>(List.of(s10_Fria_Enriched, s16_Cal_Enriched));
