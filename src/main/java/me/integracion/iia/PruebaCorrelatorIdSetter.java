@@ -26,8 +26,8 @@ public class PruebaCorrelatorIdSetter {
             Queue<Message> queueEntrada = new LinkedList<>();
             Queue<Message> queueSalida = new LinkedList<>();
 
-            Slot slotEntrada = new Slot(queueEntrada);
-            Slot slotSalida = new Slot(queueSalida);
+            Slot slotEntrada = new Slot();
+            Slot slotSalida = new Slot();
 
             entradas.add(slotEntrada);
             salidas.add(slotSalida);

@@ -25,8 +25,8 @@ public class PruebaTranslator {
             Queue<Message> queueEntrada = new LinkedList<>();
             Queue<Message> queueSalida = new LinkedList<>();
 
-            Slot sEntrada = new Slot(queueEntrada);
-            Slot sSalida = new Slot(queueSalida);
+            Slot sEntrada = new Slot();
+            Slot sSalida = new Slot();
 
             entrySlots.add(sEntrada);
             exitSlots.add(sSalida);

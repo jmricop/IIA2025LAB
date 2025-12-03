@@ -30,8 +30,7 @@ public class ConectorBaseDatos extends Conector {
     // Constructor: Solo necesita el puerto de donde leerá los mensajes
     public ConectorBaseDatos(Port port) {
         super(port);
-        Queue<Message> m = new LinkedList<>();
-        this.port = new SolPort(new Slot(m));
+        this.port = new SolPort(new Slot());
     }
 
     @Override

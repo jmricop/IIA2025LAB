@@ -53,8 +53,8 @@ public class PruebaCorrelator {
 
 
         // Crear slots de entrada
-        Slot entrada1 = new Slot(new LinkedList<>());
-        Slot entrada2 = new Slot(new LinkedList<>());
+        Slot entrada1 = new Slot();
+        Slot entrada2 = new Slot();
 
         entrada1.addMessage(m1);
         entrada1.addMessage(m2);
@@ -64,8 +64,8 @@ public class PruebaCorrelator {
 
 
         // Crear slots de salida
-        Slot salida1 = new Slot(new LinkedList<>());
-        Slot salida2 = new Slot(new LinkedList<>());
+        Slot salida1 = new Slot();
+        Slot salida2 = new Slot();
 
 
         // Preparar listas

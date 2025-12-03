@@ -33,9 +33,9 @@ public class PruebaContextSlimmer {
             Queue<Message> queueEntradaContexto = new LinkedList<>();
             Queue<Message> queueSalida = new LinkedList<>();
 
-            Slot slotPrincipal = new Slot(queueEntradaPrincipal);
-            Slot slotContexto = new Slot(queueEntradaContexto);
-            Slot slotSalida = new Slot(queueSalida);
+            Slot slotPrincipal = new Slot();
+            Slot slotContexto = new Slot();
+            Slot slotSalida = new Slot();
 
             // --- CARGAR ARCHIVOS XML ---
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

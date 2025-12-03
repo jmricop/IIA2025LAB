@@ -48,14 +48,14 @@ public class IIA {
         colaEntrada.add(m2);
 
         // Dos salidas posibles
-        Queue<Message> colaSalida0 = new LinkedList<>();
-        Queue<Message> colaSalida1 = new LinkedList<>();
+        //Queue<Message> colaSalida0 = new LinkedList<>();
+        //Queue<Message> colaSalida1 = new LinkedList<>();
 
         ArrayList<Slot> entradas = new ArrayList<>();
         ArrayList<Slot> salidas = new ArrayList<>();
-        entradas.add(new Slot(colaEntrada));
-        salidas.add(new Slot(colaSalida0));
-        salidas.add(new Slot(colaSalida1));
+        entradas.add(new Slot());
+        salidas.add(new Slot());
+        salidas.add(new Slot());
 
         // ===  Creamos el Distributor ===
         // Distribuye según el contenido del tag <tipo>
@@ -299,14 +299,14 @@ public class IIA {
             // El Merger es lo opuesto: Múltiples entradas, 1 salida.
             // Creamos los 2 buzones de ENTRADA
             Queue<Message> queueEntradaA = new LinkedList<>();
-            Slot slotEntradaA = new Slot(queueEntradaA);
+            Slot slotEntradaA = new Slot();
 
             Queue<Message> queueEntradaB = new LinkedList<>();
-            Slot slotEntradaB = new Slot(queueEntradaB);
+            Slot slotEntradaB = new Slot();
 
             // Creamos el ÚNICO buzón de SALIDA
             Queue<Message> queueSalida = new LinkedList<>();
-            Slot slotSalida = new Slot(queueSalida);
+            Slot slotSalida = new Slot();
 
             // Creamos la "pared de buzones" de entrada (con 2 buzones)
             ArrayList<Slot> se = new ArrayList<>();

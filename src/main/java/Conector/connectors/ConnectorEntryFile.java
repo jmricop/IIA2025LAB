@@ -79,8 +79,6 @@ public class ConnectorEntryFile extends Conector {
                     port.write(msg);
                     System.out.println("    [EXITO] Mensaje inyectado al puerto.");
 
-                    // OPCIONAL: Mover o renombrar el archivo para no procesarlo infinitamente
-                    // file.renameTo(new File(file.getAbsolutePath() + ".processed"));
                 } else {
                     System.out.println("    [IGNORADO] No es un archivo o no acaba en .xml");
                 }

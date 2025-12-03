@@ -4,6 +4,7 @@
  */
 package common;
 
+import java.util.LinkedList;
 import java.util.Queue;
 
 /**
@@ -22,8 +23,8 @@ public class Slot {
         this.messages = messages;
     }
 
-    public Slot(Queue<Message> messages) {
-        this.messages = messages;
+    public Slot() {
+        this.messages = new LinkedList<>();
     }
     
     public void addMessage(Message msg){

@@ -19,44 +19,37 @@ public class CafeteriaPruebas {
     public static void main(String[] args) {
         System.out.println(">>> INICIANDO SISTEMA DE INTEGRACIÓN CAFETERÍA (Modo Manual) <<<");
 
-        // ===============================================================
-        // 1. DEFINICIÓN DE "CABLES" (SLOTS)
-        // Siguiendo el diagrama de la página 2 del PDF 'Cafe Implementation'
-        // ===============================================================
-        // --- Troncal Principal ---
-        Slot s0_Entrada = new Slot(new LinkedList<>());
-        Slot s1_SplitterOut = new Slot(new LinkedList<>());
-        Slot s2_ConId = new Slot(new LinkedList<>());
+        Slot s0_Entrada = new Slot();
+        Slot s1_SplitterOut = new Slot();
+        Slot s2_ConId = new Slot();
 
         // --- Distribución ---
-        Slot s3_Fria = new Slot(new LinkedList<>());
-        Slot s4_Caliente = new Slot(new LinkedList<>());
+        Slot s3_Fria = new Slot();
+        Slot s4_Caliente = new Slot();
 
         // --- Rama Fría (Pasos d, e) ---
-        Slot s5_Fria_Copia = new Slot(new LinkedList<>());      // Copia para guardar
-        Slot s6_Fria_ParaBarman = new Slot(new LinkedList<>()); // Copia para enviar
-        Slot s7_Fria_Traducida = new Slot(new LinkedList<>());  // Salida del Translator
-        Slot s8_Fria_Respuesta = new Slot(new LinkedList<>());  // Salida del Barman (Simulado)
-        Slot s9_Fria_Corr_Main = new Slot(new LinkedList<>());  // Salida Correlator (Mensaje Principal)
-        Slot s9_Fria_Corr_Ctx = new Slot(new LinkedList<>());   // Salida Correlator (Contexto/Respuesta)
-        Slot s10_Fria_Enriched = new Slot(new LinkedList<>());  // Salida Final Rama Fría
+        Slot s5_Fria_Copia = new Slot();      // Copia para guardar
+        Slot s6_Fria_ParaBarman = new Slot(); // Copia para enviar
+        Slot s7_Fria_Traducida = new Slot();  // Salida del Translator
+        Slot s8_Fria_Respuesta = new Slot();  // Salida del Barman (Simulado)
+        Slot s9_Fria_Corr_Main = new Slot();  // Salida Correlator (Mensaje Principal)
+        Slot s9_Fria_Corr_Ctx = new Slot();   // Salida Correlator (Contexto/Respuesta)
+        Slot s10_Fria_Enriched = new Slot();  // Salida Final Rama Fría
 
         // --- Rama Caliente (Pasos f, g) ---
-        Slot s11_Cal_Copia = new Slot(new LinkedList<>());
-        Slot s12_Cal_ParaBarman = new Slot(new LinkedList<>());
-        Slot s13_Cal_Traducida = new Slot(new LinkedList<>());
-        Slot s14_Cal_Respuesta = new Slot(new LinkedList<>());
-        Slot s15_Cal_Corr_Main = new Slot(new LinkedList<>());
-        Slot s15_Cal_Corr_Ctx = new Slot(new LinkedList<>());
-        Slot s16_Cal_Enriched = new Slot(new LinkedList<>());
+        Slot s11_Cal_Copia = new Slot();
+        Slot s12_Cal_ParaBarman = new Slot();
+        Slot s13_Cal_Traducida = new Slot();
+        Slot s14_Cal_Respuesta = new Slot();
+        Slot s15_Cal_Corr_Main = new Slot();
+        Slot s15_Cal_Corr_Ctx = new Slot();
+        Slot s16_Cal_Enriched = new Slot();
 
         // --- Reunificación ---
-        Slot s17_MergerOut = new Slot(new LinkedList<>());
-        Slot s18_SalidaFinal = new Slot(new LinkedList<>());
+        Slot s17_MergerOut = new Slot();
+        Slot s18_SalidaFinal = new Slot();
 
-        // ===============================================================
-        // 2. CONFIGURACIÓN DE TAREAS 
-        // ===============================================================
+
         Port portEntrada = new Port(s0_Entrada) {
             public Message read() {
                 return null;
@@ -82,18 +75,18 @@ public class CafeteriaPruebas {
         ArrayList<Slot> distIn = new ArrayList<>(List.of(s2_ConId));
         ArrayList<Slot> distOut = new ArrayList<>(List.of(s3_Fria, s4_Caliente));
         String[] condiciones = {"hot", "cold"};
-        Distributor distributor = new Distributor(taskEnum.DISTRIBUTOR, distIn, distOut, condiciones, 2, "tipo");
+        Distributor distributor = new Distributor(taskEnum.DISTRIBUTOR, distIn, distOut, condiciones, 2, "type");
 
         // ================= RAMA FRÍA =================
         ArrayList<Slot> repFriaIn = new ArrayList<>(List.of(s3_Fria));
         ArrayList<Slot> repFriaOut = new ArrayList<>(List.of(s5_Fria_Copia, s6_Fria_ParaBarman));
         Replicator repFria = new Replicator(repFriaIn, repFriaOut, taskEnum.ROUTER);
 
-        // Nota: Usamos tu Translator. Si no tienes un XSLT específico para esto, 
-        // usamos uno genérico o puedes comentar esta tarea si falla por falta de archivo.
+
+
         ArrayList<Slot> transFriaIn = new ArrayList<>(List.of(s6_Fria_ParaBarman));
         ArrayList<Slot> transFriaOut = new ArrayList<>(List.of(s7_Fria_Traducida));
-        // Usamos tu transform.xsl como ejemplo para que no falle el código
+
         Translator transFria = new Translator(taskEnum.TRANSLATOR, transFriaIn, transFriaOut, "src/main/java/resources/transform.xsl");
 
         // Aquí usamos tu truco de crear una Task "al vuelo" para meter la lógica de BD
@@ -110,12 +103,8 @@ public class CafeteriaPruebas {
                 // Lógica "hardcoded" permitida en este enfoque
                 try {
                     Document doc = msg.getDocument();
-                    // Ojo: Como pasamos por el Translator, el XML podría haber cambiado.
-                    // Si usas el transform.xsl, buscarías tags diferentes. 
-                    // Para simplificar, asumimos que el XML sigue teniendo info legible.
-
-                    // Simulación de consulta a BD
-                    String estado = consultarStockBD("coca-cola"); // Simplificado para el ejemplo
+                   
+                    String estado = consultarStockBD("coca-cola");
 
                     // Crear XML de respuesta
                     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -124,13 +113,12 @@ public class CafeteriaPruebas {
                     root.setTextContent("FRIO: " + estado);
                     respDoc.appendChild(root);
 
-                    // IMPORTANTE: Mantener IDs para el Correlator
                     // Usamos el constructor que preserva la info de segmentos
                     Message responseMsg = new Message(
                             respDoc,
                             msg.getIdDocument(),
-                            msg.getIdSegment(), // <--- IMPORTANTE
-                            msg.getnSegments() // <--- IMPORTANTE
+                            msg.getIdSegment(),
+                            msg.getnSegments()
                     );
                     responseMsg.setcorrelatorId(msg.getCorrelatorId());
 
@@ -154,8 +142,6 @@ public class CafeteriaPruebas {
         ArrayList<Slot> enrichFriaOut = new ArrayList<>(List.of(s10_Fria_Enriched));
         ContextEnricher enrichFria = new ContextEnricher(enrichFriaIn, enrichFriaOut, "//respuesta_barman", "//drink", taskEnum.ENRICHER);
 
-        // ================= RAMA CALIENTE =================
-        // Repetimos la estructura exacta de arriba (Pasos f, g, h...)
         // Replicator
         ArrayList<Slot> repCalIn = new ArrayList<>(List.of(s4_Caliente));
         ArrayList<Slot> repCalOut = new ArrayList<>(List.of(s11_Cal_Copia, s12_Cal_ParaBarman));
@@ -185,12 +171,11 @@ public class CafeteriaPruebas {
                     root.setTextContent("CALIENTE: " + estado);
                     respDoc.appendChild(root);
 
-                    // Usamos el constructor que preserva la info de segmentos
                     Message responseMsg = new Message(
                             respDoc,
                             msg.getIdDocument(),
-                            msg.getIdSegment(), // <--- IMPORTANTE
-                            msg.getnSegments() // <--- IMPORTANTE
+                            msg.getIdSegment(),
+                            msg.getnSegments() 
                     );
                     responseMsg.setcorrelatorId(msg.getCorrelatorId());
                     setMensajeSalida(responseMsg, 0);
@@ -215,7 +200,6 @@ public class CafeteriaPruebas {
         ArrayList<Slot> enrichCalOut = new ArrayList<>(List.of(s16_Cal_Enriched));
         ContextEnricher enrichCal = new ContextEnricher(enrichCalIn, enrichCalOut, "//respuesta_barman", "//drink", taskEnum.ENRICHER);
 
-        // ================= REUNIFICACIÓN =================
         ArrayList<Slot> mergIn = new ArrayList<>(List.of(s10_Fria_Enriched, s16_Cal_Enriched));
         ArrayList<Slot> mergOut = new ArrayList<>(List.of(s17_MergerOut));
         Merger merger = new Merger(taskEnum.MERGER, mergIn, mergOut);
@@ -234,9 +218,7 @@ public class CafeteriaPruebas {
         };
         ConnectorExitFile conectorSalida = new ConnectorExitFile(portSalida, "output_entregas", "comanda_final_");
 
-        // ===============================================================
-        // 3. MOTOR DE EJECUCIÓN MANUAL (El "While Loop")
-        // ===============================================================
+
         System.out.println(">>> Ejecutando bucles de procesamiento...");
 
         // Simulamos X ciclos de reloj para procesar todo
@@ -250,7 +232,7 @@ public class CafeteriaPruebas {
                 idSetter.action();
             }
 
-            distributor.procesar(); // Ojo: en tu código se llama procesar(), no action()
+            distributor.procesar(); 
 
             // --- RAMA FRIA ---
             if (!s3_Fria.isEmpty()) {
@@ -262,7 +244,7 @@ public class CafeteriaPruebas {
             if (!s7_Fria_Traducida.isEmpty()) {
                 barmanFrio.action();
             }
-            // Correlator necesita ambos mensajes, así que ejecutamos si hay en alguno de sus inputs
+
             if (!s5_Fria_Copia.isEmpty() || !s8_Fria_Respuesta.isEmpty()) {
                 corrFria.action();
             }
@@ -311,7 +293,7 @@ public class CafeteriaPruebas {
     private static String consultarStockBD(String producto) {
         try {
             Connection conn = GestorBaseDatos.getInstance().getConnection();
-            // OJO: Aquí asumimos que tu GestorBaseDatos funciona y la tabla 'inventario' existe
+
             PreparedStatement stmt = conn.prepareStatement("SELECT cantidad FROM inventario WHERE producto = ?");
             stmt.setString(1, producto);
             ResultSet rs = stmt.executeQuery();
