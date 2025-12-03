@@ -92,24 +92,25 @@ public class CafeteriaPruebas {
         Task barmanFrio = new Task(taskEnum.ENRICHER, barmanFrioIn, barmanFrioOut) {
             @Override
             public void action() {
-                if (isEmpty(0)) {
-                    return;
-                }
+                if (isEmpty(0)) return;
+                
                 Message msg = getEntryMessage(0);
-                // Lógica "hardcoded" permitida en este enfoque
                 try {
                     Document doc = msg.getDocument();
+                    
+                    
+                    String nombreBebida = doc.getElementsByTagName("name").item(0).getTextContent();
+                    
+                    
+                    String estado = consultarStockBD(nombreBebida);
 
-                    String estado = consultarStockBD("coca-cola");
-
-                    // Crear XML de respuesta
+                    
                     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                     Document respDoc = dbf.newDocumentBuilder().newDocument();
                     Element root = respDoc.createElement("respuesta_barman");
-                    root.setTextContent("FRIO: " + estado);
+                    root.setTextContent("FRIO: " + estado); 
                     respDoc.appendChild(root);
 
-                    // Usamos el constructor que preserva la info de segmentos
                     Message responseMsg = new Message(
                             respDoc,
                             msg.getIdDocument(),
@@ -119,15 +120,14 @@ public class CafeteriaPruebas {
                     responseMsg.setcorrelatorId(msg.getCorrelatorId());
 
                     setMensajeSalida(responseMsg, 0);
-                    System.out.println("Barman Frío: Bebida procesada.");
+                    System.out.println("Barman Frío: Procesado '" + nombreBebida + "' -> " + estado);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void mock() {
-            }
+            public void mock() {}
         };
 
         ArrayList<Slot> corrFriaIn = new ArrayList<>(List.of(s5_Fria_Copia, s8_Fria_Respuesta));
@@ -154,36 +154,41 @@ public class CafeteriaPruebas {
         Task barmanCal = new Task(taskEnum.ENRICHER, barmanCalIn, barmanCalOut) {
             @Override
             public void action() {
-                if (isEmpty(0)) {
-                    return;
-                }
+                if (isEmpty(0)) return;
+                
                 Message msg = getEntryMessage(0);
                 try {
-                    String estado = consultarStockBD("cafe"); // Simplificado
+                    Document doc = msg.getDocument();
+                    
+                    // 1. LEER EL NOMBRE DEL XML (Dinámico)
+                    String nombreBebida = doc.getElementsByTagName("name").item(0).getTextContent();
 
+                    // 2. CONSULTAR ESE NOMBRE EN LA BD
+                    String estado = consultarStockBD(nombreBebida);
+
+                    // 3. GENERAR RESPUESTA
                     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                     Document respDoc = dbf.newDocumentBuilder().newDocument();
                     Element root = respDoc.createElement("respuesta_barman");
-                    root.setTextContent("CALIENTE: " + estado);
+                    root.setTextContent("CALIENTE: " + estado); // Etiqueta correcta para barman caliente
                     respDoc.appendChild(root);
 
                     Message responseMsg = new Message(
                             respDoc,
                             msg.getIdDocument(),
                             msg.getIdSegment(),
-                            msg.getnSegments()
+                            msg.getnSegments() 
                     );
                     responseMsg.setcorrelatorId(msg.getCorrelatorId());
                     setMensajeSalida(responseMsg, 0);
-                    System.out.println("Barman Caliente: Bebida procesada.");
+                    System.out.println("Barman Caliente: Procesado '" + nombreBebida + "' -> " + estado);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void mock() {
-            }
+            public void mock() {}
         };
 
         // Correlator
@@ -217,7 +222,7 @@ public class CafeteriaPruebas {
         System.out.println(">>> Ejecutando bucles de procesamiento...");
 
         // Simulamos X ciclos de reloj para procesar todo
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 33; i++) {
             conectorEntrada.action();
 
             splitter.action();
