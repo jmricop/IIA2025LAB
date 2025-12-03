@@ -2,6 +2,7 @@ package me.integracion.iia;
 
 import Conector.connectors.*;
 import Port.Port;
+import Port.ports.EntryPort;
 import Port.ports.SolPort;
 import Tasks.enrouters.*;
 import Tasks.modifiers.*;
@@ -10,7 +11,7 @@ import Tasks.taskEnum;
 import common.*;
 import java.util.*;
 
-public class CafeteriaPruebas {
+public class TelegramPruebas {
 
     public static void main(String[] args) {
         System.out.println(">>> INICIANDO SISTEMA DE INTEGRACIÓN CAFETERÍA (Modo Manual) <<<");
@@ -45,17 +46,17 @@ public class CafeteriaPruebas {
         Slot s17_MergerOut = new Slot();
         Slot s18_SalidaFinal = new Slot();
 
-        Port portEntrada = new Port(s0_Entrada) {
+        /*Port portEntrada = new Port(s0_Entrada) {
             public Message read() {
                 return null;
             }
 
-            public void write(Message m) {
+            public void write(Message m) {   NO HARIA FALTA YA QUE EL PUERTO VA A ESCUCHAR DEL BOT DE TELEGRAM
                 buffer.addMessage(m);
             }
         };
 
-        ConnectorEntryFile conectorEntrada = new ConnectorEntryFile(portEntrada, "src/main/java/resources/inputs");
+        ConnectorEntryFile conectorEntrada = new ConnectorEntryFile(portEntrada, "src/main/java/resources/inputs");*/
 
         ArrayList<Slot> splitIn = new ArrayList<>(List.of(s0_Entrada));
         ArrayList<Slot> splitOut = new ArrayList<>(List.of(s1_SplitterOut));
@@ -144,15 +145,26 @@ public class CafeteriaPruebas {
         ConnectorExitFile conectorSalida = new ConnectorExitFile(portSalida, "output_entregas", "comanda_final_");
         
         
+        String token = "8186887363:AAEUAaBG7weNwxitjgV3jXKnk8mWVvHUqsI"; 
+        
+        
+        Port portTelegram = new EntryPort(s0_Entrada);
+        ConectorTelegram conectorTelegram = new ConectorTelegram(portTelegram, token);
+        
         System.out.println(">>> Ejecutando bucles de procesamiento...");
 
         // Simulamos X ciclos de reloj para procesar todo
-        for (int i = 0; i < 33; i++) {
-            conectorEntrada.action();
+        System.out.println(">>> INICIANDO SERVIDOR DE INTEGRACIÓN (Modo Continuo) <<<");
+        System.out.println(">>> Pulsa Ctrl+C para detener el sistema.");
+
+        // Bucle infinito: El programa nunca termina por sí solo, como un servidor real
+        while (true) {
+            
+            
+            conectorTelegram.action(); 
 
             splitter.action();
 
-            // Si hay algo en la salida del splitter, asignamos ID correlacion
             if (!s1_SplitterOut.isEmpty()) {
                 idSetter.action();
             }
@@ -160,54 +172,37 @@ public class CafeteriaPruebas {
             distributor.procesar();
 
             // --- RAMA FRIA ---
-            if (!s3_Fria.isEmpty()) {
-                repFria.action();
-            }
-            if (!s6_Fria_ParaBarman.isEmpty()) {
-                transFria.action();
-            }
+            if (!s3_Fria.isEmpty()) repFria.action();
+            if (!s6_Fria_ParaBarman.isEmpty()) transFria.action();
             
-                conectorBarmanFrio.action();
-            
+            // Usamos el NUEVO Conector Barman
+            conectorBarmanFrio.action(); 
 
-            if (!s5_Fria_Copia.isEmpty() || !s8_Fria_Respuesta.isEmpty()) {
-                corrFria.action();
-            }
-            if (!s9_Fria_Corr_Main.isEmpty()) {
-                enrichFria.action();
-            }
+            if (!s5_Fria_Copia.isEmpty() || !s8_Fria_Respuesta.isEmpty()) corrFria.action();
+            if (!s9_Fria_Corr_Main.isEmpty()) enrichFria.action();
 
             // --- RAMA CALIENTE ---
-            if (!s4_Caliente.isEmpty()) {
-                repCal.action();
-            }
-            if (!s12_Cal_ParaBarman.isEmpty()) {
-                transCal.action();
-            }
-           
-                conectorBarmanCal.action();
+            if (!s4_Caliente.isEmpty()) repCal.action();
+            if (!s12_Cal_ParaBarman.isEmpty()) transCal.action();
             
-            if (!s11_Cal_Copia.isEmpty() || !s14_Cal_Respuesta.isEmpty()) {
-                corrCal.action();
-            }
-            if (!s15_Cal_Corr_Main.isEmpty()) {
-                enrichCal.action();
-            }
+            // Usamos el NUEVO Conector Barman
+            conectorBarmanCal.action();
+
+            if (!s11_Cal_Copia.isEmpty() || !s14_Cal_Respuesta.isEmpty()) corrCal.action();
+            if (!s15_Cal_Corr_Main.isEmpty()) enrichCal.action();
 
             // --- FINAL ---
-            if (!s10_Fria_Enriched.isEmpty() || !s16_Cal_Enriched.isEmpty()) {
-                merger.action();
-            }
-            if (!s17_MergerOut.isEmpty()) {
-                aggregator.action();
-            }
+            if (!s10_Fria_Enriched.isEmpty() || !s16_Cal_Enriched.isEmpty()) merger.action();
+            if (!s17_MergerOut.isEmpty()) aggregator.action();
 
             conectorSalida.action();
 
-            // Pequeña pausa para no saturar la consola en la demo
+            
             try {
-                Thread.sleep(100);
-            } catch (Exception e) {
+                Thread.sleep(2000); // Pausa de 2 segundos entre chequeos
+            } catch (InterruptedException e) {
+                System.out.println("Servidor detenido.");
+                break;
             }
         }
 
@@ -216,3 +211,4 @@ public class CafeteriaPruebas {
 
     
 }
+
