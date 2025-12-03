@@ -64,7 +64,7 @@ public abstract class Task {
     }
     
     public int getNumEntrySlots() {
-        // Asumiendo que tu variable ArrayList se llama "entrySlot"
+        
         return entrySlot.size();
     }
 

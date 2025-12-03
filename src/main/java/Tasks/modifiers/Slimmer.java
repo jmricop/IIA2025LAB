@@ -28,25 +28,14 @@ public class Slimmer extends Task {
      
     private final Transformer transformer;
 
-    /**
-     * Constructor para la Tarea Slimmer (XSLT Transformer).
-     *
-     * @param entrySlots   Lista de slots de entrada (DEBE ser de tamaño 1).
-     * @param exitSlots    Lista de slots de salida (DEBE ser de tamaño 1).
-     * @param xsltFilePath Ruta al archivo .xslt que define la transformación.
-     * @param t            El tipo de tarea (del enum).
-     * @throws Exception Si el archivo XSLT no se puede encontrar o compilar.
-     */
+    
     public Slimmer(ArrayList<Slot> entrySlots, ArrayList<Slot> exitSlots,
                    String xsltFilePath, taskEnum t) throws Exception {
 
-        // 1. Llamar al constructor padre
+        
         super(t, entrySlots, exitSlots);
 
 
-        // 3. Compilar el XSLT
-        // Esto es una gran optimización: el XSLT se "lee" y "compila"
-        // una sola vez cuando se crea la tarea, no cada vez que se ejecuta.
         TransformerFactory factory = TransformerFactory.newInstance();
         Source xsltSource = new StreamSource(new File(xsltFilePath));
         this.transformer = factory.newTransformer(xsltSource);
@@ -94,9 +83,7 @@ public class Slimmer extends Task {
         }
     }
 
-    /**
-     * Implementación del método mock (para pruebas).
-     */
+   
     @Override
     public void mock() {
         

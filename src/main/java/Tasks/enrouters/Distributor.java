@@ -44,7 +44,7 @@ public class Distributor extends Task {
 
             for (int i = 0; i < getNSalidas(); i++) {
                 try {
-                    //String expression = "boolean(" + tagALeer + "[text()='" + Condiciones[i] + "'])";
+                   
                     String expression = "boolean(//" + tagALeer + "[text()='" + Condiciones[i] + "'])";
 
                     boolean result = (boolean) xpath.evaluate(expression, mensaje.getDocument(), XPathConstants.BOOLEAN);

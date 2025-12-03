@@ -2,13 +2,9 @@ package Conector.connectors;
 
 import Conector.Conector;
 import Port.Port;
-import Port.ports.ExitPort;
-import common.Slot;
 import common.Message;
 
 import java.io.File;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.transform.*;

@@ -23,8 +23,8 @@ import javax.xml.xpath.XPathExpressionException;
 public class ContextEnricher extends Task {
 
     // --- Reglas (XPath) ---
-    private final String xPathToExtract; // XPath para COPIAR desde el Contexto
-    private final String xPathToInsert;  // XPath para PEGAR en el Principal
+    private final String xPathToExtract; 
+    private final String xPathToInsert;  
 
     // --- Herramienta XPath (reutilizable) ---
     private final XPath xpath;
@@ -33,11 +33,10 @@ public class ContextEnricher extends Task {
     public ContextEnricher(ArrayList<Slot> entrySlots, ArrayList<Slot> exitSlots,
             String xPathToExtract, String xPathToInsert, taskEnum t) {
 
-        // 1. Llamar al constructor padre
+
         super(t, entrySlots, exitSlots); 
 
 
-        // 3. Guardar las reglas y crear la herramienta XPath
         this.xPathToExtract = xPathToExtract;
         this.xPathToInsert = xPathToInsert;
         this.xpath = XPathFactory.newInstance().newXPath();
@@ -55,11 +54,10 @@ public class ContextEnricher extends Task {
         try {
 
            
-            Message mainMessage = getEntryMessage(0);    // Slot 0 = Principal
-            Message contextMessage = getEntryMessage(1); // Slot 1 = Contexto
+            Message mainMessage = getEntryMessage(0);    
+            Message contextMessage = getEntryMessage(1); 
 
             // 3. Obtener los documentos de los mensajes
-            // (Asumiendo que Message tiene getDocument())
             Document mainDoc = mainMessage.getDocument();
             Document contextDoc = contextMessage.getDocument();
 
@@ -71,10 +69,7 @@ public class ContextEnricher extends Task {
             );
 
             if (nodesToCopy.getLength() == 0) {
-                // No es un error, simplemente no había nada que enriquecer
-                // System.out.println("Enricher ADVERTENCIA: No se encontró nada para extraer del contexto con XPath: " + xPathToExtract);
-
-                // El mensaje principal pasa sin cambios.
+                
                 setMensajeSalida(mainMessage, 0); // Enviar el mensaje original
                 return;
             }
@@ -106,12 +101,12 @@ public class ContextEnricher extends Task {
             setMensajeSalida(mainMessage, 0);
 
         } catch (XPathExpressionException e) {
-            // Error en la sintaxis de una expresión XPath
+            
             Logger.getLogger(ContextEnricher.class.getName()).log(Level.SEVERE, "Error de sintaxis XPath en Enricher", e);
         } catch (Exception e) {
-            // Cualquier otro error (ej. getDocument() es nulo)
+            
             Logger.getLogger(ContextEnricher.class.getName()).log(Level.SEVERE, "Error fatal en la Tarea Enricher", e);
-            // Aquí podrías tener lógica para enviar a un slot de error si existiera
+            
         }
     }
 

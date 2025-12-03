@@ -35,25 +35,23 @@ public class ConectorBaseDatos extends Conector {
 
     @Override
     public void action() {
-        // 1. Verificar si hay mensajes en el puerto
-        // (Dependiendo de tu implementación de Port, puede que necesites acceder al buffer directamente)
+       
         if (this.port.getBuffer().isEmpty()) {
             return;
         }
 
-        // 2. Leer el mensaje
-        Message msg = this.port.read(); // O this.port.getBuffer().getFirstMessage() si read() no lo saca
+        
+        Message msg = this.port.read(); 
         if (msg == null) return;
 
         Document doc = msg.getDocument();
         System.out.println("ConectorBaseDatos: Procesando pedido ID " + msg.getIdMsg());
 
         try {
-            // 3. Extraer datos del XML usando XPath
-            // Ajusta estos XPaths a la estructura real de tu XML (ej: //bebida, //cantidad)
+            
             XPath xPath = XPathFactory.newInstance().newXPath();
             
-            // Asumimos XML tipo: <pedido><bebida>fanta</bebida><cantidad>2</cantidad></pedido>
+            
             String producto = (String) xPath.evaluate("//bebida", doc, XPathConstants.STRING);
             String cantidadStr = (String) xPath.evaluate("//cantidad", doc, XPathConstants.STRING);
 
@@ -80,11 +78,10 @@ public class ConectorBaseDatos extends Conector {
         ResultSet rs = null;
 
         try {
-            // Obtenemos conexión del Singleton (GestorBaseDatos)
-            // Si no tienes el Singleton, aquí harías: DriverManager.getConnection("jdbc:sqlite:tienda.db");
+            
             conn = GestorBaseDatos.getInstance().getConnection();
 
-            // A. PREGUNTAR (Consultar Stock)
+            
             String sqlCheck = "SELECT cantidad FROM stock WHERE producto = ?";
             stmtCheck = conn.prepareStatement(sqlCheck);
             stmtCheck.setString(1, producto);
@@ -95,7 +92,6 @@ public class ConectorBaseDatos extends Conector {
                 System.out.println("Stock actual de " + producto + ": " + stockActual);
 
                 if (stockActual >= cantidadSolicitada) {
-                    // B. MANEJAR (Actualizar Stock)
                     String sqlUpdate = "UPDATE stock SET cantidad = cantidad - ? WHERE producto = ?";
                     stmtUpdate = conn.prepareStatement(sqlUpdate);
                     stmtUpdate.setInt(1, cantidadSolicitada);
@@ -113,7 +109,7 @@ public class ConectorBaseDatos extends Conector {
         } catch (SQLException e) {
             System.err.println("Error SQL: " + e.getMessage());
         } finally {
-            // Cerrar recursos específicos de esta consulta (pero NO la conexión si es compartida)
+            
             try {
                 if (rs != null) rs.close();
                 if (stmtCheck != null) stmtCheck.close();

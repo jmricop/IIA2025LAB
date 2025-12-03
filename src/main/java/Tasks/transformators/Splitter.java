@@ -7,17 +7,17 @@ package Tasks.transformators; // (El paquete es el que tenías)
 import Tasks.Task;
 import Tasks.taskEnum;
 
-// --- Imports de la versión HEAD (la buena) ---
+
 import common.Message;
 import common.Slot;
 import common.Diccionario;
-import common.IdUnico; // (Aunque no lo usamos en la versión corregida, lo dejamos por si acaso)
+import common.IdUnico; 
 import common.ValoresDiccionario;
 
-// --- Imports de la versión MASTER (la necesaria) ---
+
 import java.util.ArrayList;
 
-// --- Imports comunes ---
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;

@@ -20,7 +20,7 @@ public enum taskEnum {
     
     SPLITTER(taskType.ROUTER, "Splits a large message into several smaller ones"),
     ROUTER(taskType.ROUTER, "Sends a message to a destination based on content"),
-    DISTRIBUTOR(taskType.ROUTER, "distributor si"),
+    DISTRIBUTOR(taskType.ROUTER, "Distributes the message with an XPath"),
     CORRELATOR(taskType.ROUTER, "Correlates messages form different inputs and aligns them into ordered outputs"),
 
     

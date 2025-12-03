@@ -8,9 +8,7 @@ package Tasks;
  *
  * @author apolo
  */
-/**
- * Represents the main category of an integration task.
- */
+
 public enum taskType {
     ROUTER,     
     TRANSFORMER, 

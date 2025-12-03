@@ -36,7 +36,7 @@ public class Message {
     private int nSegments;
     private Document document;
 
-    public Message(Document msj, int idDocument) { //Constructor para el puerto
+    public Message(Document msj, int idDocument) { 
         this.document = msj;
         this.idMsg = UUID.randomUUID().toString();
         this.idDocument = idDocument;
@@ -47,7 +47,7 @@ public class Message {
 
     }
 
-    public Message(Document msj, int idDocument, int idSegment, int nSegmets) {//Constructor para splitter
+    public Message(Document msj, int idDocument, int idSegment, int nSegmets) {
         this.document = msj;
         this.idMsg = UUID.randomUUID().toString();
         this.idDocument = idDocument;
