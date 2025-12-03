@@ -2,16 +2,13 @@ package me.integracion.iia;
 
 import Conector.connectors.*;
 import Port.Port;
-import Tasks.Task;
+import Port.ports.SolPort;
 import Tasks.enrouters.*;
 import Tasks.modifiers.*;
 import Tasks.transformators.*;
 import Tasks.taskEnum;
 import common.*;
-import java.sql.*;
 import java.util.*;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.*;
 
 public class CafeteriaPruebas {
 
@@ -84,50 +81,13 @@ public class CafeteriaPruebas {
 
         Translator transFria = new Translator(taskEnum.TRANSLATOR, transFriaIn, transFriaOut, "src/main/java/resources/transform.xsl");
 
-        // Aquí usamos tu truco de crear una Task "al vuelo" para meter la lógica de BD
-        ArrayList<Slot> barmanFrioIn = new ArrayList<>(List.of(s7_Fria_Traducida));
-        ArrayList<Slot> barmanFrioOut = new ArrayList<>(List.of(s8_Fria_Respuesta));
-
-        Task barmanFrio = new Task(taskEnum.ENRICHER, barmanFrioIn, barmanFrioOut) {
-            @Override
-            public void action() {
-                if (isEmpty(0)) return;
-                
-                Message msg = getEntryMessage(0);
-                try {
-                    Document doc = msg.getDocument();
-                    
-                    
-                    String nombreBebida = doc.getElementsByTagName("name").item(0).getTextContent();
-                    
-                    
-                    String estado = consultarStockBD(nombreBebida);
-
-                    
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                    Document respDoc = dbf.newDocumentBuilder().newDocument();
-                    Element root = respDoc.createElement("respuesta_barman");
-                    root.setTextContent("FRIO: " + estado); 
-                    respDoc.appendChild(root);
-
-                    Message responseMsg = new Message(
-                            respDoc,
-                            msg.getIdDocument(),
-                            msg.getIdSegment(),
-                            msg.getnSegments()
-                    );
-                    responseMsg.setcorrelatorId(msg.getCorrelatorId());
-
-                    setMensajeSalida(responseMsg, 0);
-                    System.out.println("Barman Frío: Procesado '" + nombreBebida + "' -> " + estado);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void mock() {}
-        };
+        // === CONECTOR BARMAN FRÍO ===
+        // Creamos Puertos para envolver los Slots de entrada y salida de esta etapa
+        Port portFrioIn = new SolPort(s7_Fria_Traducida);
+        Port portFrioOut = new SolPort(s8_Fria_Respuesta);
+        
+        // Instanciamos el Conector
+        ConectorBarman conectorBarmanFrio = new ConectorBarman(portFrioIn, portFrioOut, "FRIO");
 
         ArrayList<Slot> corrFriaIn = new ArrayList<>(List.of(s5_Fria_Copia, s8_Fria_Respuesta));
         ArrayList<Slot> corrFriaOut = new ArrayList<>(List.of(s9_Fria_Corr_Main, s9_Fria_Corr_Ctx));
@@ -147,48 +107,13 @@ public class CafeteriaPruebas {
         ArrayList<Slot> transCalOut = new ArrayList<>(List.of(s13_Cal_Traducida));
         Translator transCal = new Translator(taskEnum.TRANSLATOR, transCalIn, transCalOut, "src/main/java/resources/transform.xsl");
 
-        // Barman Caliente (Anónimo)
-        ArrayList<Slot> barmanCalIn = new ArrayList<>(List.of(s13_Cal_Traducida));
-        ArrayList<Slot> barmanCalOut = new ArrayList<>(List.of(s14_Cal_Respuesta));
-        Task barmanCal = new Task(taskEnum.ENRICHER, barmanCalIn, barmanCalOut) {
-            @Override
-            public void action() {
-                if (isEmpty(0)) return;
-                
-                Message msg = getEntryMessage(0);
-                try {
-                    Document doc = msg.getDocument();
-                    
-                    // 1. LEER EL NOMBRE DEL XML (Dinámico)
-                    String nombreBebida = doc.getElementsByTagName("name").item(0).getTextContent();
-
-                    // 2. CONSULTAR ESE NOMBRE EN LA BD
-                    String estado = consultarStockBD(nombreBebida);
-
-                    // 3. GENERAR RESPUESTA
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                    Document respDoc = dbf.newDocumentBuilder().newDocument();
-                    Element root = respDoc.createElement("respuesta_barman");
-                    root.setTextContent("CALIENTE: " + estado); // Etiqueta correcta para barman caliente
-                    respDoc.appendChild(root);
-
-                    Message responseMsg = new Message(
-                            respDoc,
-                            msg.getIdDocument(),
-                            msg.getIdSegment(),
-                            msg.getnSegments() 
-                    );
-                    responseMsg.setcorrelatorId(msg.getCorrelatorId());
-                    setMensajeSalida(responseMsg, 0);
-                    System.out.println("Barman Caliente: Procesado '" + nombreBebida + "' -> " + estado);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void mock() {}
-        };
+        // === CONECTOR BARMAN CALIENTE ===
+        // Creamos Puertos
+        Port portCalIn = new SolPort(s13_Cal_Traducida);
+        Port portCalOut = new SolPort(s14_Cal_Respuesta);
+        
+        // Instanciamos el Conector
+        ConectorBarman conectorBarmanCal = new ConectorBarman(portCalIn, portCalOut, "CALIENTE");
 
         // Correlator
         ArrayList<Slot> corrCalIn = new ArrayList<>(List.of(s11_Cal_Copia, s14_Cal_Respuesta));
@@ -240,9 +165,9 @@ public class CafeteriaPruebas {
             if (!s6_Fria_ParaBarman.isEmpty()) {
                 transFria.action();
             }
-            if (!s7_Fria_Traducida.isEmpty()) {
-                barmanFrio.action();
-            }
+            
+                conectorBarmanFrio.action();
+            
 
             if (!s5_Fria_Copia.isEmpty() || !s8_Fria_Respuesta.isEmpty()) {
                 corrFria.action();
@@ -258,9 +183,9 @@ public class CafeteriaPruebas {
             if (!s12_Cal_ParaBarman.isEmpty()) {
                 transCal.action();
             }
-            if (!s13_Cal_Traducida.isEmpty()) {
-                barmanCal.action();
-            }
+           
+                conectorBarmanCal.action();
+            
             if (!s11_Cal_Copia.isEmpty() || !s14_Cal_Respuesta.isEmpty()) {
                 corrCal.action();
             }
@@ -288,32 +213,5 @@ public class CafeteriaPruebas {
         System.out.println(">>> Ejecución finalizada.");
     }
 
-    private static String consultarStockBD(String producto) {
-        try {
-            Connection conn = GestorBaseDatos.getInstance().getConnection();
-
-            PreparedStatement stmt = conn.prepareStatement("SELECT cantidad FROM inventario WHERE producto = ?");
-            stmt.setString(1, producto);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                int cantidadActual = rs.getInt("cantidad");
-
-                if (cantidadActual > 0) {
-
-                    PreparedStatement updateStmt = conn.prepareStatement("UPDATE inventario SET cantidad = cantidad - 1 WHERE producto = ?");
-                    updateStmt.setString(1, producto);
-                    updateStmt.executeUpdate();
-                    updateStmt.close();
-
-                    return "PREPARADA";
-                }
-            }
-            rs.close();
-            stmt.close();
-        } catch (Exception e) {
-            System.out.println("Error DB: " + e.getMessage());
-        }
-        return "AGOTADA";
-    }
+    
 }

@@ -11,7 +11,6 @@ import Tasks.taskEnum;
 import common.Message;
 import common.Slot;
 import common.Diccionario;
-import common.IdUnico; 
 import common.ValoresDiccionario;
 
 
