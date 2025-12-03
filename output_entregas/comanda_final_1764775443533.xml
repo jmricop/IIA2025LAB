@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<comanda id="1">
+<cafe_order>
       
-  <cliente>Cliente Prueba</cliente>
+  <order_id>1</order_id>
       
-  <lista_bebidas>
+  <drinks>
             
         
     
-    <bebida id="1">
+    <drink>
                   
-      <tipo>fria</tipo>
+      <name>cafe</name>
                   
-      <nombre>CocaCola</nombre>
+      <type>hot</type>
               
       <respuesta_barman>FRIO: PREPARADA</respuesta_barman>
-    </bebida>
-    <bebida id="2">
+    </drink>
+    <drink>
                   
-      <tipo>caliente</tipo>
+      <name>coca-cola</name>
                   
-      <nombre>CafeSolo</nombre>
+      <type>cold</type>
               
       <respuesta_barman>CALIENTE: PREPARADA</respuesta_barman>
-    </bebida>
-  </lista_bebidas>
+    </drink>
+  </drinks>
   
-</comanda>
+</cafe_order>
