@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <cafe_order>
       
-  <order_id>4</order_id>
+  <order_id>2</order_id>
       
   <drinks>
             
         
+        
     
+    <drink>
+                  
+      <name>cafe</name>
+                  
+      <type>hot</type>
+              
+      <respuesta_barman>FRIO: AGOTADA</respuesta_barman>
+    </drink>
     <drink>
                   
       <name>chocolate</name>
                   
       <type>hot</type>
               
-      <respuesta_barman>FRIO: PREPARADA</respuesta_barman>
+      <respuesta_barman>FRIO: AGOTADA</respuesta_barman>
     </drink>
     <drink>
                   
-      <name>tonica</name>
+      <name>coca-cola</name>
                   
       <type>cold</type>
               
-      <respuesta_barman>CALIENTE: PREPARADA</respuesta_barman>
+      <respuesta_barman>CALIENTE: AGOTADA</respuesta_barman>
     </drink>
   </drinks>
   

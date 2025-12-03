@@ -14,7 +14,7 @@
                   
       <type>hot</type>
               
-      <respuesta_barman>FRIO: PREPARADA</respuesta_barman>
+      <respuesta_barman>FRIO: AGOTADA</respuesta_barman>
     </drink>
     <drink>
                   
@@ -22,7 +22,7 @@
                   
       <type>cold</type>
               
-      <respuesta_barman>CALIENTE: PREPARADA</respuesta_barman>
+      <respuesta_barman>CALIENTE: AGOTADA</respuesta_barman>
     </drink>
     <drink>
                   
@@ -30,7 +30,7 @@
                   
       <type>cold</type>
               
-      <respuesta_barman>CALIENTE: PREPARADA</respuesta_barman>
+      <respuesta_barman>CALIENTE: AGOTADA</respuesta_barman>
     </drink>
   </drinks>
   

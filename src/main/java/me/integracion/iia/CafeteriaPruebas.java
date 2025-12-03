@@ -49,7 +49,6 @@ public class CafeteriaPruebas {
         Slot s17_MergerOut = new Slot();
         Slot s18_SalidaFinal = new Slot();
 
-
         Port portEntrada = new Port(s0_Entrada) {
             public Message read() {
                 return null;
@@ -74,15 +73,12 @@ public class CafeteriaPruebas {
 
         ArrayList<Slot> distIn = new ArrayList<>(List.of(s2_ConId));
         ArrayList<Slot> distOut = new ArrayList<>(List.of(s3_Fria, s4_Caliente));
-        String[] condiciones = {"hot", "cold"};
+        String[] condiciones = {"cold", "hot"}; 
         Distributor distributor = new Distributor(taskEnum.DISTRIBUTOR, distIn, distOut, condiciones, 2, "type");
-
         // ================= RAMA FRÍA =================
         ArrayList<Slot> repFriaIn = new ArrayList<>(List.of(s3_Fria));
         ArrayList<Slot> repFriaOut = new ArrayList<>(List.of(s5_Fria_Copia, s6_Fria_ParaBarman));
         Replicator repFria = new Replicator(repFriaIn, repFriaOut, taskEnum.ROUTER);
-
-
 
         ArrayList<Slot> transFriaIn = new ArrayList<>(List.of(s6_Fria_ParaBarman));
         ArrayList<Slot> transFriaOut = new ArrayList<>(List.of(s7_Fria_Traducida));
@@ -103,7 +99,7 @@ public class CafeteriaPruebas {
                 // Lógica "hardcoded" permitida en este enfoque
                 try {
                     Document doc = msg.getDocument();
-                   
+
                     String estado = consultarStockBD("coca-cola");
 
                     // Crear XML de respuesta
@@ -175,7 +171,7 @@ public class CafeteriaPruebas {
                             respDoc,
                             msg.getIdDocument(),
                             msg.getIdSegment(),
-                            msg.getnSegments() 
+                            msg.getnSegments()
                     );
                     responseMsg.setcorrelatorId(msg.getCorrelatorId());
                     setMensajeSalida(responseMsg, 0);
@@ -218,7 +214,6 @@ public class CafeteriaPruebas {
         };
         ConnectorExitFile conectorSalida = new ConnectorExitFile(portSalida, "output_entregas", "comanda_final_");
 
-
         System.out.println(">>> Ejecutando bucles de procesamiento...");
 
         // Simulamos X ciclos de reloj para procesar todo
@@ -232,7 +227,7 @@ public class CafeteriaPruebas {
                 idSetter.action();
             }
 
-            distributor.procesar(); 
+            distributor.procesar();
 
             // --- RAMA FRIA ---
             if (!s3_Fria.isEmpty()) {
@@ -289,7 +284,6 @@ public class CafeteriaPruebas {
         System.out.println(">>> Ejecución finalizada.");
     }
 
-    // Método auxiliar para simular la DB sin ensuciar el main
     private static String consultarStockBD(String producto) {
         try {
             Connection conn = GestorBaseDatos.getInstance().getConnection();
@@ -297,9 +291,22 @@ public class CafeteriaPruebas {
             PreparedStatement stmt = conn.prepareStatement("SELECT cantidad FROM inventario WHERE producto = ?");
             stmt.setString(1, producto);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next() && rs.getInt("cantidad") > 0) {
-                return "PREPARADA";
+
+            if (rs.next()) {
+                int cantidadActual = rs.getInt("cantidad");
+
+                if (cantidadActual > 0) {
+
+                    PreparedStatement updateStmt = conn.prepareStatement("UPDATE inventario SET cantidad = cantidad - 1 WHERE producto = ?");
+                    updateStmt.setString(1, producto);
+                    updateStmt.executeUpdate();
+                    updateStmt.close();
+
+                    return "PREPARADA";
+                }
             }
+            rs.close();
+            stmt.close();
         } catch (Exception e) {
             System.out.println("Error DB: " + e.getMessage());
         }
